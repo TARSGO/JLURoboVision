@@ -1,0 +1,8 @@
+/cmake-build-debug/
+.vs/
+.vscode/
+.cache/
+out/
+build*/
+Folder.DotSettings.user
+CMakeSettings.json
