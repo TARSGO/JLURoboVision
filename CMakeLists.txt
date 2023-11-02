@@ -121,3 +121,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 get_target_property(PRJ_INCLUDES JLURoboVision INCLUDE_DIRECTORIES)
 message("Detected includes: ${PRJ_INCLUDES}")
+
