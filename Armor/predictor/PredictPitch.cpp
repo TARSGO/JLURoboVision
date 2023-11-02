@@ -196,7 +196,7 @@ double PredictPitchXY::dropshotRK45()
             std::cout << "..............................................." << std::endl;
             std::cout << "theta:" << theta * 180 / 3.1415 << std::endl;
             std::cout << "..............................................." << std::endl;
-            return theta;
+            return ;
         } // 合适则输出本次迭代使用的theta
         else theta += atan((error) / X_r);
 
