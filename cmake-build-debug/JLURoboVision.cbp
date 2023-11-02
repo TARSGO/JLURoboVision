@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="JLURoboVision"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\local\;CMake Files\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\usr\local\lib\cmake\opencv4\;CMake Files\..\..\..\..\usr\local\lib\cmake\yaml-cpp\;CMake Files\..\..\..\..\usr\local\share\;CMake Files\..\..\..\..\usr\local\share\eigen3\;CMake Files\..\..\..\..\usr\local\share\eigen3\cmake\;CMake Files\..\..\..\..\usr\local\share\sophus\;CMake Files\..\..\..\..\usr\local\share\sophus\cmake\;CMake Files\Debug\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="JLURoboVision">
+				<Option output="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/JLURoboVision" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include/eigen3"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/."/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Can"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/General"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Main"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Wind"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui"/>
+					<Add directory="/usr/include/SDL2"/>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 JLURoboVision"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="JLURoboVision/fast">
+				<Option output="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/JLURoboVision" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include/eigen3"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/."/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Can"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/General"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Main"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Wind"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui"/>
+					<Add directory="/usr/include/SDL2"/>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 JLURoboVision/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ImguiDbgkit">
+				<Option output="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/libImguiDbgkit.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/local/include/eigen3"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/."/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Can"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/General"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Main"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Wind"/>
+					<Add directory="/usr/include/SDL2"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imGuIZMO.quat"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 ImguiDbgkit"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ImguiDbgkit/fast">
+				<Option output="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/libImguiDbgkit.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/local/include/eigen3"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/."/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Can"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/General"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Main"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Wind"/>
+					<Add directory="/usr/include/SDL2"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui"/>
+					<Add directory="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imGuIZMO.quat"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 ImguiDbgkit/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug/Debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver/AngleSolver.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver/AngleSolver.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/Armor.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/ArmorBox.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/ArmorDebug.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/ArmorDetector.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/ArmorNumClassifier.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/LightBar.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/findLights.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/detector/matchArmors.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/AdaptiveEKF.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/AntiScopperil.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/AntiScopperil.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/PredictPitch.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/PredictPitch.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/TrackState.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/kalman_filter.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Armor/predictor/kalman_filter.hpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/Dbg3DScene.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/Dbg3DScene.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/DbgGraph.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/DbgGraph.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/GraphEditor.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/GraphEditor.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImCurveEdit.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImCurveEdit.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGradient.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGradient.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGuizmo.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGuizmo.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImSequencer.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImSequencer.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImZoomSlider.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImguiDbgkit.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImguiDbgkit.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_opengl3.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_opengl3.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_sdl.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_sdl.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imconfig.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_demo.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_draw.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_internal.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_tables.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_widgets.cpp">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imstb_rectpack.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imstb_textedit.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imstb_truetype.h">
+			<Option target="ImguiDbgkit"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/General/General.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/General/General.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/General/Platform.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxCamera.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxCamera.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK/DxImageProc.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK/GxIAPI.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Main/ArmorDetecting.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Main/ImageUpdating.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Main/main.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial/Serial.cpp">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Serial/Serial.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Thirdparty/angles.h">
+			<Option target="JLURoboVision"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/opencv4/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/opencv4/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/opencv4/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/opencv4/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/yaml-cpp/yaml-cpp-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/yaml-cpp/yaml-cpp-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/yaml-cpp/yaml-cpp-targets-noconfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/lib/cmake/yaml-cpp/yaml-cpp-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\lib\cmake\yaml-cpp\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/eigen3/cmake/Eigen3Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\eigen3\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/eigen3/cmake/Eigen3ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\eigen3\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/eigen3/cmake/Eigen3Targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\eigen3\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/sophus/cmake/SophusConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\sophus\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/sophus/cmake/SophusConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\sophus\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/../../../../usr/local/share/sophus/cmake/SophusTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\local\share\sophus\cmake\"/>
+		</Unit>
+		<Unit filename="/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Debug\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
