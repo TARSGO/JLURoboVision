@@ -1,8 +1,0 @@
-/home/jlu/Downloads/clion-2023.1.3/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /home/jlu/Desktop/jlurobo-vision-2023-master -B /home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug
--- Found OpenCV: /usr/local (found version "4.6.0") 
-Current source dir /home/jlu/Desktop/jlurobo-vision-2023-master/Debug
-SDL2 inc: /usr/include/SDL2
-Detected includes: /usr/local/include/opencv4;/usr/local/include/eigen3;/home/jlu/Desktop/jlurobo-vision-2023-master/.;/home/jlu/Desktop/jlurobo-vision-2023-master/AngleSolver;/home/jlu/Desktop/jlurobo-vision-2023-master/Armor;/home/jlu/Desktop/jlurobo-vision-2023-master/Can;/home/jlu/Desktop/jlurobo-vision-2023-master/Debug;/home/jlu/Desktop/jlurobo-vision-2023-master/General;/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera;/home/jlu/Desktop/jlurobo-vision-2023-master/GxCamera/GxSDK;/home/jlu/Desktop/jlurobo-vision-2023-master/Main;/home/jlu/Desktop/jlurobo-vision-2023-master/Serial;/home/jlu/Desktop/jlurobo-vision-2023-master/Wind;/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui;/usr/include/SDL2
--- Configuring done
--- Generating done
--- Build files have been written to: /home/jlu/Desktop/jlurobo-vision-2023-master/cmake-build-debug
