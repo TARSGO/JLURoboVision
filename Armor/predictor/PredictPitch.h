@@ -16,7 +16,17 @@ class PredictPitch
 {
 public:
     /**
-    * @brief Init all parameter
+    * @brief Init static parameter
+    */
+    void Init();
+
+    PredictPitch()
+    {
+      Init();
+    }
+
+    /**
+    * @brief Init shoot parameter
     */
     void InitPredictPitch(float bulletspeednow, double distance,float hrrec);
 
@@ -51,6 +61,12 @@ public:
     * @brief used for hero dropshot
    */
     void dropshot();
+
+    /**
+    * @brief used for hero dropshot
+   */
+    void dropshotRK45();
+
     /**
     * @brief select algorithm
    */
