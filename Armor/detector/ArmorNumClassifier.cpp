@@ -96,7 +96,6 @@ void ArmorNumClassifier::setArmorNum(ArmorBox & armor){
     result_ss << class_names_[label_id] - '0' << ":_" << std::fixed << std::setprecision(1)
               << armor.confidence * 100.0 << "%";
     armor.classfication_result = result_ss.str();
-    cout<<armor.armorNum<<endl;
 }
 
 //如果需要制作数据集，改变输出文件夹并取消imwrite的注释即可

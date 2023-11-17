@@ -68,7 +68,7 @@ TrackState::~TrackState() {
 
 void TrackState::KFStateReset(Eigen::Vector3d initialPosVec) {
     Eigen::Matrix<double, 6, 6> f;
-    f <<  1,  0,  0,  0,  0,  0,
+    f <<    1,  0,  0,  0,  0,  0,
             0,  1,  0,  0,  0,  0,
             0,  0,  1,  0,  0,  0,
             0,  0,  0,  1,  0,  0,
@@ -218,7 +218,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
                         Eigen::Vector3d resolvedPosVec = armor.resolvedPos;
                         Eigen::VectorXd newTargetState;
                         newTargetState.setZero(6);
-                        newTargetState << resolvedPosVec, 0, 0, 0;
+                        newTargetState << resolvedPosVec, m_TargetState[3], m_TargetState[4], m_TargetState[5];
                         m_TargetState = newTargetState;
                         // 判断进入小陀螺模式
                         double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw

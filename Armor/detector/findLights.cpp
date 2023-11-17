@@ -26,7 +26,7 @@ void ArmorDetector::findLights() {
 		if (lightContour.size() < 5) continue; //if contour's size is less than 6 , then it can not used to fitEllipse 轮廓点数小于6，不可拟合椭圆
 
     //TODO:远距离击打和识别装甲板到底有没有必要，我认为是不必要的
-    if (contourArea(lightContour) < 20 || contourArea(lightContour) > 270) continue; //minarea of lightContour to filter some small blobs 面积筛选滤去小发光点
+    //  if (contourArea(lightContour) < 20 || contourArea(lightContour) > 270) continue; //minarea of lightContour to filter some small blobs 面积筛选滤去小发光点
 		auto lightRect = minAreaRect(lightContour); //lightContour fits into a RotatedRect 拟合椭圆
 		auto light = LightBar(lightRect,contourArea(lightContour));//construct to a lightBar 构造为灯条
 

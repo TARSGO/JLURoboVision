@@ -45,8 +45,8 @@ int imageUpdatingThreadCamera()
 	/*
 	 *Third SetInitialArmor: Set Camera Params: ROI, Exposure, Gain, WhiteBalance
 	*/
-    gxCam.setRoiParam(1280, 1024, 0, 0);				// ROI
-    gxCam.setExposureParam(5000, false, 10000, 30000);	// Exposure
+  gxCam.setRoiParam(1280, 1024, 0, 0);				// ROI
+  gxCam.setExposureParam(5000, false, 10000, 30000);	// Exposure
 	gxCam.setGainParam(8, false, 0, 10);				// Gain
 	gxCam.setWhiteBalanceOn(true);						// WhiteBalance
 	/*
@@ -54,7 +54,7 @@ int imageUpdatingThreadCamera()
 	*/
 	status = gxCam.startAcquiring();					// Send Start Acquisition Command
 	GX_VERIFY(status);
-    cv::VideoWriter vi("./test.avi",cv::VideoWriter::fourcc('M','J','P','J'),25.0,Size(1080,1280));
+  //  cv::VideoWriter vi("./test.avi",cv::VideoWriter::fourcc('M','J','P','J'),25.0,Size(1080,1280));
     while (true)
     {
         // FPS
@@ -77,7 +77,7 @@ int imageUpdatingThreadCamera()
             FrameFetched.store(true);
             GlobalCondCV.notify_one();
         }
-        vi.write(src);
+    //    vi.write(src);
     //		char chKey = waitKey(1);
     //		if (chKey == 'w' || chKey == 'W')
     //			break;
@@ -107,7 +107,7 @@ int imageUpdatingThreadCamera()
 
 int imageUpdatingThreadLocal(std::string fileName)
 { 
-	const char *filename = "/home/shaobing2/Desktop/outpost/Blue_Snipe_Halfspeed.mp4";
+	const char *filename = "/home/shaobing2/Desktop/outpost/Blue_Snipe_Halfspeed.mp4";//ROWS:1024;COLS:1920
 	Mat frame;
 	cv::VideoCapture capture;
 

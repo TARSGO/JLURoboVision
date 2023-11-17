@@ -41,7 +41,6 @@ void ArmorDetector::setImg(Mat & src){
 
     cv::cvtColor(srcImg, grayImg, cv::COLOR_RGB2GRAY);
     cv::threshold(grayImg, srcImg_binary, thresh, 255, cv::THRESH_BINARY);
-
 }
 
 

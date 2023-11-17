@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     }
 
     // 创建线程
-	if(1)
+	if(doUseVideo)
       thread(imageUpdatingThreadLocal, videoFileName).detach();
   else
       thread(imageUpdatingThreadCamera).detach();

@@ -42,10 +42,11 @@ void setArmorVertices(const LightBar & l_light, const LightBar & r_light, ArmorB
 	cv::Point2f upper_r = pts_r[1];
 	cv::Point2f lower_r = pts_r[0];
 	
-	armor.armorVertices[0] = lower_l;
-	armor.armorVertices[1] = upper_l;
-	armor.armorVertices[2] = upper_r;
-	armor.armorVertices[3] = lower_r;
+	armor.armorVertices[0] = upper_l;
+	armor.armorVertices[1] = upper_r;
+	armor.armorVertices[2] = lower_r;
+  armor.armorVertices[3] = lower_l;
+
 }
 
 ArmorBox::ArmorBox() {
@@ -105,7 +106,7 @@ bool ArmorBox::isSuitableArmor() const
     // Ratio of the length of 2 lights (short side / long side)
     double light_length_ratio = l_light.length < r_light.length ? l_light.length / r_light.length
                                                                 : r_light.length / l_light.length;
-    bool light_ratio_ok = light_length_ratio > 0.6;
+    bool light_ratio_ok = light_length_ratio > 0.7;
 
     // Distance between the center of 2 lights (unit : light length)
     double avg_light_length = (l_light.length + r_light.length) / 2;
@@ -123,3 +124,4 @@ bool ArmorBox::isSuitableArmor() const
     return armor_ok;
 }
 
+                                                                                      

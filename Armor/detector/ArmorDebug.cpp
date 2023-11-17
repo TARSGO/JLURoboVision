@@ -71,7 +71,7 @@ void ArmorDetector::showArmors(Mat & image, const vector<ArmorBox> & armors, con
         for (auto armor : armors)
         {
             //draw the center 画中心
-            circle(armorDisplay, armor.center, 2, Scalar(0, 255, 0), 2);\
+            circle(armorDisplay, armor.center, 2, Scalar(0, 255, 0), 2);
 
             for (size_t i = 0; i < 4; i++)
             {
@@ -92,7 +92,7 @@ void ArmorDetector::showArmors(Mat & image, const vector<ArmorBox> & armors, con
                 Point2f campoint=Reproject(camxyz_show);
 
                 cv::circle(armorDisplay,Point(image.cols/2,image.rows/2),2,Scalar(255,255,255),3);//WHITE:the center of image
-                cv::circle(armorDisplay, camLightcenter, 2, Scalar(0,0,0), 3);//GREEN:the center of camera lightcenter
+                cv::circle(armorDisplay, camLightcenter, 2, Scalar(0,255,0), 3);//GREEN:the center of camera lightcenter
                 cv::circle(armorDisplay, abspoint, 1, Scalar(0,0,255), 3);//RED:position we predict in world xyz
                 cv::circle(armorDisplay, campoint, 2, Scalar(255,0,0), 3);//BLUE:position we predict in camera xyz
 

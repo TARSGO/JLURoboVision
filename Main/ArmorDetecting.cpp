@@ -24,7 +24,7 @@ void armorDetectingThread()
 {
     //Set angle solver prop
     angleSolver.setCameraParam();
-    angleSolver.setArmorSize(ArmorType::SMALL_ARMOR, 135, 110);
+    angleSolver.setArmorSize(ArmorType::SMALL_ARMOR, 75, 67);
     angleSolver.setArmorSize(ArmorType::BIG_ARMOR,225,110);
 
     auto camMat = angleSolver.getCameraMatrix();
@@ -69,7 +69,6 @@ void armorDetectingThread()
             //装甲板检测识别子核心集成函数
             Armor.run(src);
             auto Cbn = GetRotMatq4(received.INS_quat1, received.INS_quat2, received.INS_quat3, received.INS_quat4);
-            waitKey(100);
 #ifdef takePhoto
             if(frameCount == 10)
             {
@@ -92,7 +91,9 @@ void armorDetectingThread()
             //迭代所有检测到的装甲板，解算出他们当前的位置，便于tracker处理
             for(auto i = Armor.begin(); i != Armor.end(); i++) {
                 auto Rc = angleSolver.getArmorPos(*i);
-                auto Rn = Cbn * Rc;
+                //FIXME: 当前使用相机坐标系坐标，记得改回来
+                //auto Rn = Cbn * Rc;
+                auto Rn = Rc;
                 Armor.absxyz_show = Eigen::Vector3f(Rc);
 
                 ImGui::Begin("Tracker");
@@ -113,15 +114,16 @@ void armorDetectingThread()
                 Eigen::VectorXd target;
                 target = trackState.GetTargetState();
                 float T = 0.2f + 0.5f; //T = 机械（拨弹）延迟 + 电控延迟（ms级） + 视觉延迟 + 串口延迟（ms级） + bullet  time
-                cout<<T<<endl;
                 float preX, preY, preZ;
                 preX = target(0) + target(3) * T;
                 preY = target(1) + target(4) * T;
                 preZ = target(2) + target(5) * T;
                 rotAtt1 = xyz2PitchYawDis(preX, preY, preZ);
 
-
-                auto cam = Cbn.inverse() * Eigen::Vector3f{preX ,preY, preZ};
+                //FIXME:记得改回惯性坐标系
+                // auto cam = Cbn.inverse() * Eigen::Vector3f{preX ,preY, preZ};
+                auto cam=Eigen::Vector3f{preX ,preY, preZ};
+                
                 ImGui::Begin("Tracker");
                 ImGui::Text("preX: %lf + %lf", target(0) ,target(3));
                 ImGui::Text("preY: %lf + %lf", target(1) ,target(4));
@@ -142,7 +144,7 @@ void armorDetectingThread()
                 float pitch = rotAtt.pitch;
                 float distance = rotAtt.distance;
                 float hr= target(2) * 0.001;
-                cout << ">>>>=== Serial::Get()->SerialSend @ " << CurrentPreciseTime() << " Yaw=" << yaw << ", Pitch=" << pitch << "\n";
+                // cout << ">>>>=== Serial::Get()->SerialSend @ " << CurrentPreciseTime() << " Yaw=" << yaw << ", Pitch=" << pitch << "\n";
                 ImGui::Begin("HR");
                 ImGui::Text("hr:%lf",hr);
                 ImGui::End();
@@ -158,7 +160,7 @@ void armorDetectingThread()
                     ImGui::Text("TxPrevPitch: %lf", TxPrevPitch );
                     ImGui::Text("TxPrevDist: %lf", TxPrevDist );
                     ImGui::End();
-//                  Armor.predxyz_show=Eigen::Vector3f{}
+                    Armor.predxyz_show=Eigen::Vector3f{}; 
                 }
             }
             else {
@@ -171,7 +173,7 @@ void armorDetectingThread()
             ImGui::End();
 
 #ifdef DEBUG_MODE
-            Armor.showDebugInfo(1, 1, 1,  1);
+            Armor.showDebugInfo(1, 1, 1, 1);
 #endif
             bool bRun = true;
             char chKey = waitKey(1);

@@ -110,7 +110,7 @@ bool ArmorDetector::ArmorJudge(ArmorBox armor)
 {
     bool mismatch = false;
     if (armor.type == ArmorType::BIG_ARMOR) {
-        mismatch = armor.armorNum == 'O' || armor.armorNum == '2' || armor.armorNum == '3';
+        mismatch = armor.armorNum == 'O' ;
     } else if (armor.type == ArmorType::SMALL_ARMOR) {
         mismatch = armor.armorNum == '1' || armor.armorNum == 'B' || armor.armorNum == 'G';
     }
