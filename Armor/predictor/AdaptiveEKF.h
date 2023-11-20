@@ -31,14 +31,15 @@ public:
     VectorX predict(Func &&func) {
         ceres::Jet<double, N_X> Xe_auto_jet[N_X];
         for (int i = 0; i < N_X; i++) {
-            Xe_auto_jet[i].a = Xe[i];
+            Xe_auto_jet[i].a = Xe[i];//初始化jet变量
             Xe_auto_jet[i].v[i] = 1;
         }
         ceres::Jet<double, N_X> Xp_auto_jet[N_X];
         func(Xe_auto_jet, Xp_auto_jet);
         for (int i = 0; i < N_X; i++) {
             Xp[i] = Xp_auto_jet[i].a;
-            F.block(i, 0, 1, N_X) = Xp_auto_jet[i].v.transpose();
+            F.block(i, 0, 1, N_X) = Xp_auto_j3
+            et[i].v.transpose();
         }
         P = F * P * F.transpose() + Q;
         return Xp;

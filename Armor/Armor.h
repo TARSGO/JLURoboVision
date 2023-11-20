@@ -12,6 +12,7 @@
 #include "Armor/predictor/kalman_filter.hpp"
 #include "ImguiDbgkit.h"
 #include "Debug/Dbg3DScene.h"
+#include "./predictor/EKF.hpp"
 #include "time.h"
 #include <chrono>
 #include <cmath>
@@ -297,7 +298,7 @@ private:
     double m_MaxTrackingDistance, m_TrackingThreshold, m_LostThreshold;
 
     KalmanFilter m_Kf;
-
+    EKF<double,9,4> m_ekf;
     // 维护追踪器的状态
     ShootState m_TrackingState;
     int m_DetectCount_;

@@ -77,16 +77,6 @@ enum class Color
     RED = 1
 };
 
-/**
-* @brief: shoot mode LASER0 ARMOR1
-*/
-enum class Mode
-{
-    LASER = 0,
-    AUTO = 1
-    
-};
-
 struct RotationAtt {
     double yaw, pitch, distance;
 };

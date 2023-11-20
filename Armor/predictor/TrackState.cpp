@@ -38,11 +38,11 @@ TrackState::TrackState() :
 {
 //    YAML::Node params = YAML::LoadFile("../General/config.yaml");
     cv::FileStorage file_settings( "../General/config.yaml", cv::FileStorage::READ);
-        if (!file_settings.isOpened())
-        {
-        std::cerr << "Failed to open YAML file in TrackState.cpp" << std::endl;
-        return;
-        }
+    if (!file_settings.isOpened())
+    {
+    std::cerr << "Failed to open YAML file in TrackState.cpp" << std::endl;
+    return;
+    }
     file_settings["m_MaxTrackingDistance"]>>m_MaxTrackingDistance;
     file_settings["m_TrackingThreshold"]>>m_TrackingThreshold;
     file_settings["m_LostThreshold"]>>m_LostThreshold;
