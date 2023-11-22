@@ -34,7 +34,7 @@ static void CustomTextOntoDrawList(ImDrawList* list, ImVec2 pos, ImU32 col, cons
 void TrackState::AutoAimEKFInit()
 {
   //f
-  auto f = [](const Eigen::Matrix<double,9,1> & x, Eigen::Matrix<double,1,1> & u)
+  auto f = [](const Eigen::Matrix<double,9,1> & x,const Eigen::Matrix<double,1,1> & u)
   {
     Eigen::Matrix<double,9,1> x_pre = x;
     x_pre[0] += x[5] *u[0];
@@ -44,15 +44,43 @@ void TrackState::AutoAimEKFInit()
     return x_pre;
   };
 
+  //J_f
+  auto J_f = [](const Eigen::Matrix<double,1,1> & u)
+  {
+    double dt = u[0];
+    Eigen::Matrix<double,9,9> F;
+    F <<  1,   0,   0,   0,   0,   dt,  0,   0,   0,
+          0,   1,   0,   0,   0,   0,   dt,  0,   0,
+          0,   0,   1,   0,   0,   0,   0,   dt,  0, 
+          0,   0,   0,   1,   0,   0,   0,   0,   dt,
+          0,   0,   0,   0,   1,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   1,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   1,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   1,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   1;
+    return F;
+  };  
+
   //h
-  auto h = [](const Eigen::Matrix<double,9,1> & x)
+  auto h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,1> z;
-    z(0) = x(0) + x(4) * cos(x(3));
-    z(1) = x(1) + x(4) * sin(x(3));
-    z(2) = x(2);
-    z(3) = x(3);
+    z(0) = x_pre(0) + x_pre(4) * cos(x_pre(3));
+    z(1) = x_pre(1) + x_pre(4) * sin(x_pre(3));
+    z(2) = x_pre(2);
+    z(3) = x_pre(3);
     return z;
+  };
+
+  //J_h
+  auto J_h = [](const Eigen::Matrix<double,9,1> & x_pre)
+  {
+    Eigen::Matrix<double,4,9> H;
+    H <<  1,   0,   0,   x_pre(4)*sin(x_pre(3)),   -cos(x_pre(3)),   0,   0, 0,   0,
+      0,   1,   0,   -x_pre(4)*cos(x_pre(3)),    -sin(x_pre(3)),   0,   0,0,  0,
+      0,   0,   1,   0,   0,   0,   0,          0,   0,
+      0,   0,   0,   1,   0,   0,   0,          0,   0;
+    return H;
   };
 
   //Q--由于我们采用恒速模型，故假定加速度=0且满足正态分布，故噪声主要来自于旋转中心平移加速度和旋转加速度，其对位移和速度的影响分别为1/2*dt^2*error和dt*error,故需要引入控制变量u
@@ -98,7 +126,7 @@ void TrackState::AutoAimEKFInit()
   Eigen::Matrix<double,9,1> X_post;
   X_post.Zero();
   
-  m_ekf=EKF<double,9,4,1>(f,h,Q,R,P,X_post);
+  m_ekf=EKF<double,9,4,1>(f,J_f,h,J_h,Q,R,P,X_post);
 }
 
 TrackState::TrackState() :
