@@ -26,14 +26,14 @@ public:
     R(R),
     P_post(P),
     I(Eigen::Matrix<T,X,Y>::Identity()),
-    X_post(Xpost.rows() ? Xpost : Eigen::Matrix<T,X,1>::Zero(n))
+    X_post(X_post)
   {
   }
 
-  void ResetEKF(const Eigen::Matrix<T,X,Y> & P, const Eigen::Matrix<T,X,1> & X_post)
+  void ResetEKF(const Eigen::Matrix<T,X,X> & p, const Eigen::Matrix<T,X,1> & x_post)
   {
-    P_post = P;
-    X_post = X_post;
+    P_post = p;
+    X_post = x_post;
   }
   //输入量更新
   void updateU(const Eigen::Matrix<T,Z,1> u_input = 0){u = u_input;};
@@ -57,7 +57,7 @@ private:
   hFunc h;//观测矩阵
   QNoiseFunc Q;//过程噪声协方差矩阵
   RNoiseFunc R;//测量噪声协方差矩阵
-  Eigen::Matrix<T,X,X> P;//状态协方差矩阵
+  Eigen::Matrix<T,X,X> P_post;//状态协方差矩阵
   Eigen::Matrix<T,X,Y> I;//单位矩阵
   Eigen::Matrix<T,X,1> X_pre;//先验状态
   Eigen::Matrix<T,X,1> X_post;//后验状态

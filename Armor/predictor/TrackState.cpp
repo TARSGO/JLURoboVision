@@ -137,7 +137,7 @@ TrackState::~TrackState() {
 
 }
 
-void TrackState::KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero()) {
+void TrackState::KFStateReset(Eigen::Vector3d initialPosVec) {
     Eigen::Matrix<double, 6, 6> f;
     f <<    1,  0,  0,  0,  0,  0,
             0,  1,  0,  0,  0,  0,
@@ -171,7 +171,7 @@ void TrackState::KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().
 
 }
 
-void TrackState::EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec = Eigen::Matrix<double,5,1>().setZero()) {
+void TrackState::EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec) {
     //P
     Eigen::Matrix<double,9,9> P;
     P.setIdentity();

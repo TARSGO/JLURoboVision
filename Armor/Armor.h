@@ -288,6 +288,7 @@ protected:
     void SetInitialArmor(ArmorDetector &detector);
     void KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero());
     void EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec = Eigen::Matrix<double,5,1>().setZero());
+    // void EKFStateReset(Eigen::VectorXd  initialPosVec );
     cv::Point2f Reproject(Eigen::Vector3d& xyz);
 
     void Debug_ArmorOnScreenPos(ArmorDetector &detector, int trackingArmorIdx, Eigen::Vector3d predictXyz);
