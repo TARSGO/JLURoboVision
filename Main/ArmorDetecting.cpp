@@ -10,12 +10,15 @@
 
 // #define takePhoto
 #define DEBUG_MODE
-#define AIM_OR_LASER 1
+//FIXME：这个模式切换，回头会改成以测距远近为准
+//#define AIM_OR_LASER 1 //AIM:1 LASER:2 
+
 
 ArmorDetector Armor;
 AngleSolver angleSolver;
 TrackState trackState;
 PredictPitch bullet;
+SerialReceiveData received;
 
 double TxPrevYaw = 0.0, TxPrevPitch = 0.0, TxPrevDist = 0.0;
 int TxPrevArmorNum = 0;
@@ -36,7 +39,6 @@ void armorDetectingThread()
     double t;
     int frameCount = 0;
 
-    SerialReceiveData received;
     while (!ImguiDbgkit::get()->IsDone()) {
         ImguiDbgkit::get()->NewFrame();
         trackState.SceneNewFrame();
@@ -64,7 +66,8 @@ void armorDetectingThread()
             imageReadable = false;
         }
 
-#if AIM_OR_LASER
+      if (received.mode == 1)
+      {
           //Armor.setImg(src);
           //装甲板检测识别子核心集成函数
           Armor.run(src);
@@ -162,9 +165,11 @@ void armorDetectingThread()
                   ImGui::End();
                   Armor.predxyz_show=Eigen::Vector3f{}; 
               }
-#else 
+          }
+          else if(received.mode == 2)
+          {
             Serial::Get()->SerialSend(TxPrevYaw, TxPrevPitch, TxPrevDist, false, false, TxPrevArmorNum, SerialDeviceName);
-#endif
+          }
             double t1 = (cv::getTickCount() - t) / cv::getTickFrequency();
             ImGui::Begin("Info");
             ImGui::Text("Image acquiring FPS: %f", 1 / t1);

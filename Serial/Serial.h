@@ -30,6 +30,7 @@
 
 /**
 * @brief 输出接收数据使用的结构体
+* @param mode :1为自瞄，2为吊射
 */
 struct SerialReceiveData
 {
@@ -41,6 +42,7 @@ struct SerialReceiveData
     float pitch;
     float distance;
     bool is_enemy_blue;
+    int  mode = 1;
     float bullet_speed; // m/s
 };
 

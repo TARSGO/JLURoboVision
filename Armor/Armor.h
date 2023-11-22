@@ -284,8 +284,10 @@ public:
 
 protected:
     void AntiSpinInit();
+    void AutoAimEKFInit();
     void SetInitialArmor(ArmorDetector &detector);
     void KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero());
+    void EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec = Eigen::Matrix<double,5,1>().setZero());
     cv::Point2f Reproject(Eigen::Vector3d& xyz);
 
     void Debug_ArmorOnScreenPos(ArmorDetector &detector, int trackingArmorIdx, Eigen::Vector3d predictXyz);
@@ -298,7 +300,7 @@ private:
     double m_MaxTrackingDistance, m_TrackingThreshold, m_LostThreshold;
 
     KalmanFilter m_Kf;
-    EKF<double,9,4> m_ekf;
+    EKF<double,9,4,1> m_ekf;
     // 维护追踪器的状态
     ShootState m_TrackingState;
     int m_DetectCount_;
