@@ -34,32 +34,40 @@ public:
     X_post(X_post)
   {
   }
-  //,,
+  //重新装载EKF
   void ResetEKF(const Eigen::Matrix<T,X,X> & p, const Eigen::Matrix<T,X,1> & x_post)
   {
     P_post = p;
     X_post = x_post;
   }
-  //输入量更新
-  void updateUZ(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero(), const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero()){u = u_input;z = z_input;}
+  // //输入量更新
+  // void updateUZ(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero(), const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero()){u = u_input;z = z_input;}
   //预测
-  void predict()
+  Eigen::Matrix<T,X,1> predict(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero())
   {
+    u = u_input;
     X_pre = f(X_post,u);
     Q = update_Q(u);
     F = J_f(u);
     P_pre = F * P_post * F.transpose() + Q;
-
+    return X_pre;
   }
   //更新
-  void update()
+  void update(const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero())
   {
+    z = z_input;
     H = J_h(X_pre);
     R = update_R();
     Residual = z - h(X_pre);
     K = P_pre * H.transpose() * (H * P_pre * H.transpose() + R);
     X_post = X_pre + K * Residual;
     P_post = (I - K * H) * P_pre;
+  }
+  //
+  Eigen::Matrix<T,X,1> static_predict(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero())
+  {
+    X_pre = f(X_post,u_input);
+    return X_pre;
   }
 
 private:

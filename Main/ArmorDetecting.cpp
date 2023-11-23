@@ -27,7 +27,7 @@ void armorDetectingThread()
 {
     //Set angle solver prop
     angleSolver.setCameraParam();
-    angleSolver.setArmorSize(ArmorType::SMALL_ARMOR, 75, 67);
+    angleSolver.setArmorSize(ArmorType::SMALL_ARMOR, 75, 31);
     angleSolver.setArmorSize(ArmorType::BIG_ARMOR,225,110);
 
     auto camMat = angleSolver.getCameraMatrix();
@@ -93,10 +93,13 @@ void armorDetectingThread()
           
           //迭代所有检测到的装甲板，解算出他们当前的位置，便于tracker处理
           for(auto i = Armor.begin(); i != Armor.end(); i++) {
-              auto Rc = angleSolver.getArmorPos(*i);
+              auto armorstate = angleSolver.getArmorState(*i);
+              Eigen::Vector3f Rc = armorstate.block(0,0,2,0);
+              Eigen::Vector3f Cam_ang = armorstate.block(3,0,5,0);//pitch yaw roll
               //FIXME: 当前使用相机坐标系坐标，记得改回来
               //auto Rn = Cbn * Rc;
               auto Rn = Rc;
+
               Armor.absxyz_show = Eigen::Vector3f(Rc);
 
               ImGui::Begin("Tracker");
@@ -109,8 +112,8 @@ void armorDetectingThread()
               ImGui::End();
 
               i->resolvedPos = { Rn(0), Rn(1), Rn(2) };
+              i->resolvedAng = {Cam_ang(0) + received.pitch, Cam_ang(1) + received.yaw, Cam_ang(2)};
           }
-          if(received.bullet_speed == 0)received.bullet_speed = 15.7;
           bool targetValid = trackState.UpdateState(Armor);
           RotationAtt rotAtt, rotAtt1;
           if(targetValid) {
@@ -156,7 +159,7 @@ void armorDetectingThread()
               if(yaw == NAN || pitch == NAN)
                   Serial::Get()->SerialSend(TxPrevYaw, TxPrevPitch, TxPrevDist, false, false, TxPrevArmorNum, SerialDeviceName);
               else {
-                  TxPrevYaw = rotAtt1.yaw + 180 +0.5; TxPrevPitch = -bullet.selectalg(received.pitch ,distance * 0.001 , received.bullet_speed ,hr+0.03); TxPrevDist = rotAtt.distance * 0.001; TxPrevArmorNum = Armor.getTarget().armorNum;
+                  TxPrevYaw = rotAtt1.yaw + 180 +0.5; TxPrevPitch = bullet.selectalg(received.pitch ,distance * 0.001 , received.bullet_speed ,hr+0.03); TxPrevDist = rotAtt.distance * 0.001; TxPrevArmorNum = Armor.getTarget().armorNum;
                   Serial::Get()->SerialSend(TxPrevYaw, TxPrevPitch, TxPrevDist, targetValid, trackState.doFire, Armor.getTarget().armorNum, SerialDeviceName);
                   ImGui::Begin("Tracker");
                   ImGui::Text("TxPrevYaw: %lf", TxPrevYaw);

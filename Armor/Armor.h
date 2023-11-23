@@ -95,6 +95,7 @@ public:
     Mat armorImg;	//image of armor set by getArmorImg() from ArmorNumClassifier() 装甲板的图片（透射变换获得）
 
     RelCoordAtt resolvedPos; // 解算位置得出的该装甲板的XYZ坐标
+    RotationAtt resolvedAng; // 解算位置得出的该装甲板的欧拉角
     Mat rMat, tMat; // 为ImGuizmo可视化缓存的旋转矩阵和平移矩阵
     double distanceDiff;
     double confidence;
@@ -279,7 +280,6 @@ public:
 
 
     bool doFire;
-    int matchedarmornum;//to classify height from which armor(SolvePitch)
 
 
 protected:
@@ -288,7 +288,8 @@ protected:
     void SetInitialArmor(ArmorDetector &detector);
     void KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero());
     void EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec = Eigen::Matrix<double,5,1>().setZero());
-    // void EKFStateReset(Eigen::VectorXd  initialPosVec );
+    ArmorBox ChooseArmor(ArmorDetector &detector);
+    Eigen::VectorXd GetArmorState(const ArmorBox & target);
     cv::Point2f Reproject(Eigen::Vector3d& xyz);
 
     void Debug_ArmorOnScreenPos(ArmorDetector &detector, int trackingArmorIdx, Eigen::Vector3d predictXyz);
@@ -297,24 +298,25 @@ protected:
     bool Debug_SingleFrameOperations();
 
 private:
-    int m_RecognizedArmorNumber; // 识别到的装甲板上的数字，0为非法值。
+
     double m_MaxTrackingDistance, m_TrackingThreshold, m_LostThreshold;
 
     KalmanFilter m_Kf;
     EKF<double,9,4,1> m_ekf;
-    // 维护追踪器的状态
-    ShootState m_TrackingState;
+
+    ShootState m_TrackingState;// 维护追踪器的状态
+    Eigen::VectorXd armor_state;//装甲板运动序列
     int m_DetectCount_;
     int m_LostCount_;
     int m_FrameCounter;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_TimeSecondCounter; // 计秒变量，储存计时开始时间
     std::chrono::time_point<std::chrono::high_resolution_clock> m_PrevTime;
-
+    std::chrono::time_point<std::chrono::high_resolution_clock> last_jump_time_;
     // 相机参数，重投影用
     Eigen::Matrix3d m_CameraMatrix;
 
     Dbg3DScene m_dbgScene;
-
+    double min_position_diff;
     Eigen::Vector3d m_tracking_velocity_;
     Eigen::Vector3d last_jump_position_;
 
@@ -331,6 +333,6 @@ private:
     double accutime;//time of each frame(it will be cleaned if target in spinning)
     double last_yaw_;
     double last_jump_yaw_diff_;
-    std::chrono::time_point<std::chrono::high_resolution_clock> last_jump_time_;
+
 };
 #endif // !ARMOR

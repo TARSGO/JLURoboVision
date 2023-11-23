@@ -74,7 +74,7 @@ void PredictPitch::angle()
         ek = anglefd(t, theta);//FIXME:把它进一步封装一下
         i++;
         theta = theta + ek * 0.04;
-        if (i > 400)
+        if (i > 50)
         {
             return;
         }
@@ -97,7 +97,7 @@ void PredictPitch::dropshot()
 {
     int count = 0;
     while (abs(Y_r - Y_d) > 0.01) {
-        count = 0;
+        count ++ ;
             if (Y_r - Y_d < 0)
             {
                 theta = theta - abs(Y_r - abs(Y_d)) / fmax(Y_r, abs(Y_d)) * atan(abs(Y_r - Y_d) / X_d);
@@ -126,7 +126,7 @@ void PredictPitch::dropshot()
 
             if ((sin(theta_d) * v0process - g * dt) < 0)
                 theta_d = -atan(abs(sin(theta_d) * v0process - g * dt) / (cos(theta_d) * v0process));
-            if ((count++) > 200) break;
+          if ((count++) > 50) break;
         }
     }
 
@@ -135,19 +135,12 @@ void PredictPitch::dropshot()
 double PredictPitch::selectalg(double pitch, double distance, float bulletspeednow,float hrrec)
 {
     InitPredictPitch(bulletspeednow,distance,hrrec);
-    //if(distance<=7&&pitch>=-10)//fixme:利用角度和距离的约束决定采用哪个射击方案,回头需要实际测试进行微调*/
-    //     angle();
-    //else
-         dropshot();
+    if(distance<=7&&pitch>=-10)//fixme:利用角度和距离的约束决定采用哪个射击方案,回头需要实际测试进行微调*/
+        angle();
+    else
+        dropshot();
 
-    /*if (abs(pitch - theta * 180.0 / 3.1415) > 20)
-    {
-        return pitch;
-    }//简单滤个波*/
-     pitch = -theta * 180.0 / 3.1415;
-    if (pitch >16)
-    {
-        pitch=16;
-    }//简单滤个波
+    pitch = theta * 180.0 / 3.1415;
+    if (pitch < -16)pitch = -16;
     return pitch;
 }

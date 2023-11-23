@@ -157,7 +157,7 @@ TrackState::TrackState() :
     file_settings.release();
 
     AutoAimEKFInit();
-    m_TrackingState= ShootState::LOST;
+    m_TrackingState = ShootState::LOST;
     KFStateReset();
 }
 
@@ -212,29 +212,6 @@ void TrackState::EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec) {
 
 }
 
-void TrackState::SetInitialArmor(ArmorDetector& detector)
-{
-    if (!detector.isFoundArmor())
-        return;
-
-    // TODO(chenjun): need more judgement
-    // Simply choose the armor that is closest to image center
-    double minDistance = DBL_MAX;
-    auto& chosenArmor = detector.armors[0];
-    auto imgCenter = detector.getImageSize() / 2;
-    for (const auto & armor : detector.armors) {
-        double distanceToImageCenter = norm((armor.center - cv::Point2f(imgCenter)));
-        if (distanceToImageCenter < minDistance) {
-            minDistance = distanceToImageCenter;
-            chosenArmor = armor;
-        }
-    }
-
-    // KF SetInitialArmor
-    KFStateReset();
-    tracking_id = chosenArmor.armorNum;
-    m_TrackingState = ShootState::STABILIZE;
-}
 
 // 返回值：能否返回给电控Yaw Pitch（即当前跟踪数据能否认为有效）
 bool TrackState::UpdateState(ArmorDetector& detector) {
@@ -242,63 +219,41 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
     auto currentTime = high_resolution_clock::now();
     auto timeDiff = duration_cast<microseconds>(currentTime - m_PrevTime);
     double T = timeDiff.count() / 1000000.0;
-    accutime+=T;
+    accutime += T;
     // 是否有新帧。时停时用到的一个状态，没有新帧的时候很多东西是不应该更新的
     bool hasNewFrame = false;
     hasNewFrame = FrameFetched.exchange(hasNewFrame);
-    static bool enableDistanceBreakpoint = false;
     bool shouldUpdate = true;
-
-    Debug_DisplayStateText();
     bool doUpdateInPause = Debug_SingleFrameOperations();
     shouldUpdate = hasNewFrame || doUpdateInPause;
-
-    // 如果还没有选中初始跟踪的装甲板，先选择，然后返回非法状态
-    if(m_TrackingState == ShootState::LOST) {
-        SetInitialArmor(detector);
-        return false;
-    }
+    Debug_DisplayStateText();
 
     RelCoordAtt pos { 0, 0, 0 };
     ImGui::Begin("Track State");
+    
     if(detector.isFoundArmor()) {
         ArmorBox matched_armor;
         int TrackingArmorIndex = -1;
-        double min_position_diff = DBL_MAX;
         int itemIndex = 0;
+        
+        // 如果还没有选中初始跟踪的装甲板，持续选择
+        if(m_TrackingState == ShootState::LOST) 
+        {
+            SetInitialArmor(detector);
+            return false;
+        }
 
         m_TargetState = shouldUpdate ? m_Kf.predict(T) : m_Kf.static_predict();
 
         m_dbgScene.SetPredictedPosition(m_TargetState);
-        Eigen::Vector3d predictedPos = m_TargetState.head(3);
-        ImGui::Checkbox("Enable this breakpoint", &enableDistanceBreakpoint);
-        for (auto & armor : detector.armors) {
-            // 判断预测位置与实际位置的差值，小于阈值，则认为追踪依然有效
-            Eigen::Vector3d resolvedPos(armor.resolvedPos.x, armor.resolvedPos.y, armor.resolvedPos.z);
-            //cout << "/ ==== resolvedPos\n" << resolvedPos << "\n\\ ==== resolvedPos" << endl;
-            double distance = ((predictedPos - resolvedPos)).norm();
-            armor.distanceDiff = distance;
-            //if(hasNewFrame && enableDistanceBreakpoint);
-            if(distance <= min_position_diff ) {
-                min_position_diff = distance;
-                matched_armor = armor;
-                TrackingArmorIndex = itemIndex;
-                matchedarmornum = matched_armor.armorNum;
-            }
-            else matchedarmornum=0;
-            // 在可视化UI里显示该目标位置
-            // 交换Y和Z轴。可视化用的ImGuizmo的坐标不太一样
-            // FIXME:轴不对，先注释掉，后面测试。
-//            std::swap(armor.rMat.at<double>(0, 1), armor.rMat.at<double>(0, 2));
-//            std::swap(armor.tMat.at<double>(0, 1), armor.tMat.at<double>(0, 2));
-            // 坐标变换。AngleSolver里得到的是1x3的旋转向量，需要先转换成3x3的旋转矩阵
-            cv::Rodrigues(armor.rMat, armor.rMat);
-            m_dbgScene.SetGizmoAttitude(itemIndex++, armor.rMat, armor.tMat);
-        }
+        
+
+        matched_armor = ChooseArmor(detector);
+        cv::Rodrigues(matched_armor.rMat, matched_armor.rMat);
         if(detector.isFoundArmor())
             Debug_ArmorPnPResultGraph(detector.armors[0], shouldUpdate);
 
-        Debug_ArmorOnScreenPos(detector, TrackingArmorIndex, predictedPos);
+        Debug_ArmorOnScreenPos(detector, TrackingArmorIndex, m_TargetState.head(3));
         m_dbgScene.Frame(itemIndex);
 
 
@@ -312,7 +267,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
         }
         if (m_TrackingState > ShootState::STABILIZE) {
             // 只有当卡尔曼滤波器已经收敛之后才能开始判断距离
-            if (min_position_diff < m_max_match_distance_) {
+            if (min_position_diff < m_max_match_distance_) { 
                 // Matching armor found
                 trackingValid = true;
                 if(shouldUpdate)
@@ -325,7 +280,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
                     if (armor.armorNum == tracking_id) {
                         trackingValid = true;
                         // 硬推一下KF
-                        KFStateReset(armor.resolvedPos);
+                        KFStateReset(Eigen::Vector3d(armor.resolvedPos));
                         Eigen::Vector3d resolvedPosVec = armor.resolvedPos;
                         Eigen::VectorXd newTargetState;
                         newTargetState.setZero(6);
@@ -387,9 +342,6 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             if(shouldUpdate) minDiffGraph.NewData(min_position_diff);
             minDiffGraph.Frame("MinDiff", nullptr, 0.0f, 150.0f, ImVec2(0, 80.0f));
         }
-    }else
-    {
-        matchedarmornum=0;
     }
 
     // 状态机更新
@@ -489,7 +441,57 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             return false;
     }
 }
+//选定初始化装甲板
+void TrackState::SetInitialArmor(ArmorDetector& detector)
+{
+    // TODO(chenjun): need more judgement
+    // Simply choose the armor that is closest to image center
+    double minDistance = DBL_MAX;
+    auto& chosenArmor = detector.armors[0];
+    auto imgCenter = detector.getImageSize() / 2;
+    for (const auto & armor : detector.armors) {
+        double distanceToImageCenter = norm((armor.center - cv::Point2f(imgCenter)));
+        if (distanceToImageCenter < minDistance) {
+            minDistance = distanceToImageCenter;
+            chosenArmor = armor;
+        }
+    }
 
+    // KF SetInitialArmor
+    KFStateReset();
+    EKFStateReset();
+    tracking_id = chosenArmor.armorNum;
+    m_TrackingState = ShootState::STABILIZE;
+}
+
+//选定装甲板
+ArmorBox TrackState::ChooseArmor(ArmorDetector &detector)
+{
+  min_position_diff = DBL_MAX;
+  ArmorBox matched_armor;
+  Eigen::Vector3d predictedPos = m_TargetState.head(3);
+  for (auto & armor : detector.armors) {
+    if (armor.armorNum != tracking_id) continue;//应符合追踪数字
+    // 判断预测位置与实际位置的差值，小于阈值，则认为追踪依然有效
+    Eigen::Vector3d resolvedPos(armor.resolvedPos.x, armor.resolvedPos.y, armor.resolvedPos.z);
+    double distance = ((predictedPos - resolvedPos)).norm();
+    armor.distanceDiff = distance;
+    if(distance < min_position_diff ) {
+        min_position_diff = distance;
+        matched_armor = armor;
+    }
+  }
+  return matched_armor;
+}
+
+// //获取装甲板运动序列
+// Eigen::VectorXd TrackState::GetArmorState(const ArmorBox & target)
+// {
+//   Mat mtxR,mtxQ;
+//   Eigen::VectorXd armor_state;
+//   cv::Vec3d eulerAngles = cv::RQDecomp3x3(target.rMat, mtxR, mtxQ);//Pitch Yaw Roll
+//   //armor_state << target.
+// }
 
 double TrackState::get_shortest_angular_distance(double last_yaw, double current_yaw)
 {

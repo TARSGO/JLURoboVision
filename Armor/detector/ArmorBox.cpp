@@ -27,8 +27,8 @@ const Point2f crossPointof(const Point2f& bl,const Point2f& tl,const Point2f& tr
  */
 void setArmorVertices(const LightBar & l_light, const LightBar & r_light, ArmorBox & armor) {
 	//handle two lights
-	cv::Size exLSize(int(l_light.width), int(l_light.length * 2));
-	cv::Size exRSize(int(r_light.width), int(r_light.length * 2));
+	cv::Size exLSize(int(l_light.width), int(l_light.length));
+	cv::Size exRSize(int(r_light.width), int(r_light.length));
 	cv::RotatedRect exLLight(l_light.center, exLSize, armor.armorAngle);
 	cv::RotatedRect exRLight(r_light.center, exRSize, armor.armorAngle);
 

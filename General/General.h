@@ -82,7 +82,6 @@ struct RotationAtt {
 };
 struct RelCoordAtt {
     double x, y, z;
-
     operator Eigen::Vector3d() const {
         return Eigen::Vector3d(x, y, z);
     }

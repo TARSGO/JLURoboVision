@@ -32,7 +32,7 @@ public:
 
     cv::Mat getCameraMatrix();
 
-    Eigen::Vector3f getArmorPos(ArmorBox& target);
+    Eigen::VectorXf getArmorState(ArmorBox& target);
 
 private:
     //Camera params
