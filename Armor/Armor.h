@@ -323,7 +323,6 @@ private:
     Dbg3DScene m_dbgScene;
     double min_position_diff;
     Eigen::Vector3d m_tracking_velocity_;
-    Eigen::Vector3d last_jump_position_;
 
     double m_max_match_distance_ ;
     double allow_following_range;

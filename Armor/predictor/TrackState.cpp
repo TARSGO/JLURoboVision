@@ -273,9 +273,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             BackToFollow();
             // 判断进入小陀螺模式
             double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw
-            //double current_yaw = std::atan2(current_position.y(), current_position.x());
             double yaw_diff = get_shortest_angular_distance(last_yaw_, current_yaw);
-
             if (std::abs(yaw_diff) > max_jump_angle) 
             {
                 jump_count_++;
@@ -287,7 +285,6 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
                 auto spintimeDiff = duration_cast<microseconds>(currentTime - last_jump_time_);
                 spintime = spintimeDiff.count() / 1000000.0;
                 last_jump_time_ = currentTime;
-                last_jump_position_ = {m_TargetState(0) ,m_TargetState(1) ,m_TargetState(2)};
                 last_jump_yaw_diff_ = yaw_diff;
                 accutime=0;//if in spinning,clear the accutime
             }
@@ -384,13 +381,6 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
               doFire = true;
           }
           else {
-              m_TargetState(0) = last_jump_position_.x();
-              m_TargetState(1) = last_jump_position_.y();
-              m_TargetState(2) = last_jump_position_.z();
-              m_TargetState(3) = 0;
-              m_TargetState(4) = 0;
-              m_TargetState(5) = 0;
-
               doFire = false;
               m_TrackingState = ShootState::LOSING_FOLLOW;
           }
