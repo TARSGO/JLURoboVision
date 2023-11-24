@@ -115,6 +115,7 @@ void armorDetectingThread()
               ImGui::End();
               i->resolvedPos = { Rn(0), Rn(1), Rn(2) };
               i->resolvedAng = {double(Cam_ang(0)) + received.pitch, double(Cam_ang(1)) + received.yaw, double(Cam_ang(2))};
+              cout<<"yaw"<<double(Cam_ang(1)) + received.yaw<<endl;
           }
           bool targetValid = trackState.UpdateState(Armor);
           RotationAtt rotAtt, rotAtt1;

@@ -1,8 +1,8 @@
-#include "../Armor.h"
 #include "Armor.h"
 #include "General.h"
 #include "PredictPitch.h"
 #include "kalman_filter.hpp"
+#include "EKF.hpp"
 #include "Thirdparty/angles.h"
 #include "Debug/DbgGraph.h"
 #include <Eigen/Core>
@@ -215,7 +215,6 @@ void TrackState::EKFStateReset(Eigen::Matrix<double,9,1> initialPosVec) {
 
 // 返回值：能否返回给电控Yaw Pitch（即当前跟踪数据能否认为有效）
 bool TrackState::UpdateState(ArmorDetector& detector) {
-
     auto currentTime = high_resolution_clock::now();
     auto timeDiff = duration_cast<microseconds>(currentTime - m_PrevTime);
     double dt = timeDiff.count() / 1000000.0;
@@ -243,56 +242,59 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             return false;
         }
 
-        m_TargetState = hasNewFrame ? m_Kf.predict(dt) : m_Kf.static_predict();
+        m_TargetState = hasNewFrame ? m_ekf.predict(Eigen::Matrix<double,1,1>(dt)) : m_ekf.static_predict(Eigen::Matrix<double,1,1>(dt));
         if(!hasNewFrame) return RespondState(m_TrackingState);
 
         m_dbgScene.SetPredictedPosition(m_TargetState);
         
         matched_armor = ChooseArmor(detector);
-        cv::Rodrigues(matched_armor.rMat, matched_armor.rMat);
-
         Debug_ArmorOnScreenPos(detector, TrackingArmorIndex, m_TargetState.head(3));
         m_dbgScene.Frame(itemIndex);
 
         m_ArmorState << Eigen::Vector3d(matched_armor.resolvedPos),matched_armor.resolvedAng.yaw;
 
-        Eigen::Vector3d resolvedPos(matched_armor.resolvedPos.x,
-                                    matched_armor.resolvedPos.y,
-                                    matched_armor.resolvedPos.z);
         if (isFoundTarget && m_TrackingState != ShootState::LOSING_FOLLOW)
         {
-          m_TargetState = m_Kf.update(resolvedPos);
-          if (min_position_diff < m_max_match_distance_) isTrackVaild =true;
-          else if (m_TrackingState >= ShootState::FOLLOWING ) 
-          {
-            // 正常跟踪情况下才能由于对方旋转、丢失跟踪而进入小陀螺模式
-            // 没有任何一块装甲板在阈值内。进入小陀螺检测逻辑，
-            // 如果有相同标号的装甲板，则认为它是小陀螺要跟踪的下一个目标
-            isTrackVaild =true;
-            BackToFollow();
-            // 判断进入小陀螺模式
-            double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw
-            double yaw_diff = get_shortest_angular_distance(last_yaw_, current_yaw);
-            if (std::abs(yaw_diff) > max_jump_angle) 
+          if (min_position_diff > m_max_match_distance_)
+          {  
+            if (m_TrackingState >= ShootState::FOLLOWING ) 
             {
-                jump_count_++;
-                if (jump_count_ > 1 && std::signbit(yaw_diff) == std::signbit(last_jump_yaw_diff_)) 
-                {
-                    jump_period_ = spintime;
-                    m_TrackingState = ShootState::SPINNING;
-                }
-                auto spintimeDiff = duration_cast<microseconds>(currentTime - last_jump_time_);
-                spintime = spintimeDiff.count() / 1000000.0;
-                last_jump_time_ = currentTime;
-                last_jump_yaw_diff_ = yaw_diff;
-                accutime=0;//if in spinning,clear the accutime
+              // 正常跟踪情况下才能由于对方旋转、丢失跟踪而进入小陀螺模式
+              // 没有任何一块装甲板在阈值内。进入小陀螺检测逻辑，
+              // 如果有相同标号的装甲板，则认为它是小陀螺要跟踪的下一个目标
+              isTrackVaild =true;
+              BackToFollow();
+              // 判断进入小陀螺模式
+              double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw
+              double yaw_diff = get_shortest_angular_distance(last_yaw_, current_yaw);
+              if (std::abs(yaw_diff) > max_jump_angle) 
+              {
+                  jump_count_++;
+                  if (jump_count_ > 1 && std::signbit(yaw_diff) == std::signbit(last_jump_yaw_diff_)) 
+                  {
+                      jump_period_ = spintime;
+                      m_TrackingState = ShootState::SPINNING;
+                  }
+                  auto spintimeDiff = duration_cast<microseconds>(currentTime - last_jump_time_);
+                  spintime = spintimeDiff.count() / 1000000.0;
+                  last_jump_time_ = currentTime;
+                  last_jump_yaw_diff_ = yaw_diff;
+                  accutime=0;//if in spinning,clear the accutime
+              }
+              ImGui::Begin("spin00");
+              ImGui::Text("yaw_diff:%lf",yaw_diff);
+              ImGui::End();
+              last_yaw_ = current_yaw;
             }
-            ImGui::Begin("spin00");
-            ImGui::Text("yaw_diff:%lf",yaw_diff);
-            ImGui::End();
-            last_yaw_ = current_yaw;
+            else m_TargetState = m_ekf.update(m_ArmorState);
           }
-        }
+          else
+          {
+              m_TargetState = m_ekf.update(m_ArmorState);
+              isTrackVaild =true;
+          }
+      }
+    
 
         //FIXME:如果无新帧不保持这个的话，会怎样
         // DEBUG DISPLAY
@@ -348,6 +350,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
 
       case ShootState::FOLLOWING:
           // 已经认为获得了稳定的跟踪状态
+          if (tracking_id == 54) isAntiOutpost = true;
           if (!isFoundTarget) {
               // 丢了？没有完全丢的状态，此时可以重新获得跟踪
               // 小陀螺应该也是从这个状态进入的
@@ -383,10 +386,10 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
               doFire = false;
               m_TrackingState = ShootState::LOSING_FOLLOW;
           }
+          
       }
       break;
   }
-
     ImGui::End();
     m_PrevTime = currentTime;
 
@@ -410,21 +413,19 @@ void TrackState::SetInitialArmor(ArmorDetector& detector)
     }
 
     // KF SetInitialArmor
-    KFStateReset();
     EKFStateReset();
     tracking_id = chosenArmor.armorNum;
+    isAntiOutpost = false;
     m_TrackingState = ShootState::STABILIZE;
 }
 
 void TrackState::BackToFollow()
 {
-  // Eigen::Vector3d resolvedPos;
-  // resolvedPos = m_ArmorState.block(0,0,2,0);
-  // KFStateReset(resolvedPos);
   Eigen::Matrix<double,9,1> armorstate;
   armorstate << m_ArmorState,m_TargetState(4),m_TargetState(5),m_TargetState(6),m_TargetState(7),m_TargetState(8);
   EKFStateReset(armorstate);
-  m_TargetState = armorstate;
+  m_TargetState = m_ekf.update(m_ArmorState);
+  
 }
 
 

@@ -108,7 +108,9 @@ add_executable(JLURoboVision
         Armor/predictor/kalman_filter.hpp
         Armor/predictor/AntiScopperil.cpp
         Armor/predictor/AntiScopperil.h
-        Armor/predictor/EKF.hpp        
+        Armor/predictor/EKF.hpp 
+        Armor/predictor/AntiOutpost.h
+        Armor/predictor/AntiOutpost.cpp      
         )
 
 

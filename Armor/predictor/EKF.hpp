@@ -44,7 +44,7 @@ public:
   // //输入量更新
   // void updateUZ(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero(), const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero()){u = u_input;z = z_input;}
   //预测
-  Eigen::Matrix<T,X,1> predict(const Eigen::Matrix<T,Z,1>  u_input = Eigen::Matrix<T,Z,1>().setZero())
+  Eigen::Matrix<T,X,1> predict(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero())
   {
     u = u_input;
     X_pre = f(X_post,u);
@@ -57,6 +57,7 @@ public:
   Eigen::Matrix<T,X,1> update(const Eigen::Matrix<T,Y,1>  z_input = Eigen::Matrix<T,Y,1>().setZero())
   {
     z = z_input;
+    //cout<<"z"<<z<<endl;
     H = J_h(X_pre);
     R = update_R();
     Residual = z - h(X_pre);

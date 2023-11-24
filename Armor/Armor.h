@@ -261,8 +261,8 @@ private:
 
 };
 
-class TrackState {
     // 维护跟踪装甲板、解算目标车辆的状态
+class TrackState {
 public:
     TrackState();
     ~TrackState();
@@ -277,8 +277,6 @@ public:
 
     int tracking_id;
     Eigen::VectorXd m_TargetState;
-
-
     bool doFire;
 
 
@@ -311,6 +309,8 @@ private:
     Eigen::Matrix <double,4,1> m_ArmorState;//装甲板运动序列
     bool isFoundTarget;
     bool isTrackVaild;
+    bool isAntiOutpost;
+    Outpost outpost;
     int m_DetectCount_;
     int m_LostCount_;
     int m_FrameCounter;
@@ -339,4 +339,13 @@ private:
     double last_jump_yaw_diff_;
 
 };
+
+class Outpost : public TrackState
+{
+  public:
+  Eigen::VectorXd FixOutpost(Eigen::Matrix <double,4,1> m_ArmorState);//使用恒角速度模型对前哨站进行预测和解算
+  private:  
+    KalmanFilter CV_KF;//装载恒速模型
+};
+
 #endif // !ARMOR

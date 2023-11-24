@@ -184,6 +184,17 @@ inline float rangedAngleRad(float &angle)
     return angle;
 }
 
+/**
+* @brief 将角度限制在[-PI,PI]的范围内
+* @return 处理后的角度
+*/
+inline double easyFilter(double angle_yaw)
+{
+  double angle = angle_yaw;
+  if(angle>90)angle-=180;
+  if(angle<-90)angle+=180;
+  return angle;
+}
 std::string CurrentPreciseTime();
 std::ostream& HexDump(std::ostream& os, const void *buffer,
                       std::size_t bufsize, bool showPrintableChars = true);
