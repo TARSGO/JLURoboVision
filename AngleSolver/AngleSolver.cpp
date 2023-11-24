@@ -103,9 +103,9 @@ Eigen::VectorXf AngleSolver::getArmorState(ArmorBox& target)
     //tVec_Eigen(1) -= 140;
     //tVec_Eigen(2) += 120;
     cv::Rodrigues(rVec, rVec);
-    cv::Vec3d eulerAngles = cv::RQDecomp3x3(rVec, mtxR, mtxQ);//Pitch Yaw Roll
-    Eigen::VectorXf state;
-    state << tVec_Eigen(0),tVec_Eigen(1),tVec_Eigen(2), float(eulerAngles[0]), float(eulerAngles[1]), float(eulerAngles[2]);
+    cv::Vec3f eulerAngles = cv::RQDecomp3x3(rVec, mtxR, mtxQ);//Pitch Yaw Roll
+    Eigen::Matrix<float,6,1 > state;
+    state << tVec_Eigen(0),tVec_Eigen(1),tVec_Eigen(2), eulerAngles[0], eulerAngles[1], eulerAngles[2];
     return state;
 }
 

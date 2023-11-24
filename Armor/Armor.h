@@ -30,10 +30,10 @@ enum class DetectorState
 enum class ShootState
 {
     LOST,           //
-    STABILIZE,      //
-    WAITING,        //
-    FOLLOWING,       //
     LOSING_FOLLOW,      //
+    WAITING,        //    
+    STABILIZE,      //
+    FOLLOWING,       //
     SPINNING,
 };
 
@@ -287,9 +287,12 @@ protected:
     void AutoAimEKFInit();
     void SetInitialArmor(ArmorDetector &detector);
     void KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero());
-    void EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec = Eigen::Matrix<double,5,1>().setZero());
+    void EKFStateReset(Eigen::Matrix<double,9,1> initialPosVec = Eigen::Matrix<double,9,1>().setZero());
     ArmorBox ChooseArmor(ArmorDetector &detector);
+    void BackToFollow();
     Eigen::VectorXd GetArmorState(const ArmorBox & target);
+    bool RespondState(const ShootState & track_state);//针对状态作应答
+    void JudgeState();//判断状态
     cv::Point2f Reproject(Eigen::Vector3d& xyz);
 
     void Debug_ArmorOnScreenPos(ArmorDetector &detector, int trackingArmorIdx, Eigen::Vector3d predictXyz);
@@ -305,7 +308,9 @@ private:
     EKF<double,9,4,1> m_ekf;
 
     ShootState m_TrackingState;// 维护追踪器的状态
-    Eigen::VectorXd armor_state;//装甲板运动序列
+    Eigen::Matrix <double,4,1> m_ArmorState;//装甲板运动序列
+    bool isFoundTarget;
+    bool isTrackVaild;
     int m_DetectCount_;
     int m_LostCount_;
     int m_FrameCounter;

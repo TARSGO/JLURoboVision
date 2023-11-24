@@ -22,7 +22,7 @@ public:
   using RNoiseFunc = std::function<Eigen::Matrix<T,Y,Y>()>;
 
   //初始化
-  explicit EKF(const fFunc & f, const JfFunc & j_f, const hFunc & h, const JhFunc & j_h, const QNoiseFunc & Q, const RNoiseFunc & R,const Eigen::Matrix<T,X,X> & P, const Eigen::Matrix<T,X,1> & X_post)
+  explicit EKF(const fFunc & f, const JfFunc & j_f, const hFunc & h, const JhFunc & j_h, const QNoiseFunc & Q, const RNoiseFunc & R,const Eigen::Matrix<T,X,X> & P, const Eigen::Matrix<T,X,1> & X_post, double chi_threshold )
   : f(f),
     J_f(j_f),
     h(h),
@@ -31,7 +31,8 @@ public:
     update_R(R),
     P_post(P),
     I(Eigen::Matrix<T,X,X>::Identity()),
-    X_post(X_post)
+    X_post(X_post),
+    CHI_threshold(chi_threshold)
   {
   }
   //重新装载EKF
@@ -43,7 +44,7 @@ public:
   // //输入量更新
   // void updateUZ(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero(), const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero()){u = u_input;z = z_input;}
   //预测
-  Eigen::Matrix<T,X,1> predict(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero())
+  Eigen::Matrix<T,X,1> predict(const Eigen::Matrix<T,Z,1>  u_input = Eigen::Matrix<T,Z,1>().setZero())
   {
     u = u_input;
     X_pre = f(X_post,u);
@@ -53,7 +54,7 @@ public:
     return X_pre;
   }
   //更新
-  void update(const Eigen::Matrix<T,Y,1> z_input = Eigen::Matrix<T,Y,1>().setZero())
+  Eigen::Matrix<T,X,1> update(const Eigen::Matrix<T,Y,1>  z_input = Eigen::Matrix<T,Y,1>().setZero())
   {
     z = z_input;
     H = J_h(X_pre);
@@ -62,12 +63,22 @@ public:
     K = P_pre * H.transpose() * (H * P_pre * H.transpose() + R);
     X_post = X_pre + K * Residual;
     P_post = (I - K * H) * P_pre;
+    return X_post;
   }
   //
   Eigen::Matrix<T,X,1> static_predict(const Eigen::Matrix<T,Z,1> u_input = Eigen::Matrix<T,Z,1>().setZero())
   {
     X_pre = f(X_post,u_input);
     return X_pre;
+  }
+  //卡方检验
+  double ChiST(const Eigen::Matrix<T,Z,1> u_input , const Eigen::Matrix<T,Y,1> & z_input)
+  {
+    Eigen::Matrix<T,Y,Y> Dk;
+    Dk = H * P_pre * H.transpose();
+    double Rk = Residual.transpose() * Dk * Residual;
+    cout<<Rk<<endl;
+    return Rk;
   }
 
 private:
@@ -91,6 +102,7 @@ private:
   Eigen::Matrix<T,X,X> P_post;//状态协方差矩阵
   Eigen::Matrix<T,X,X> I;//单位矩阵
 
+  double CHI_threshold = 0;//卡方检验阈值
 };
 
 #endif

@@ -37,17 +37,17 @@ void TrackState::AutoAimEKFInit()
   auto f = [](const Eigen::Matrix<double,9,1> & x,const Eigen::Matrix<double,1,1> & u)
   {
     Eigen::Matrix<double,9,1> x_pre = x;
-    x_pre[0] += x[5] *u[0];
-    x_pre[1] += x[6] *u[0];
-    x_pre[2] += x[7] *u[0];
-    x_pre[3] += x[8] *u[0];
+    x_pre(0) += x(5) *u(0);
+    x_pre(1) += x(6) *u(0);
+    x_pre(2) += x(7) *u(0);
+    x_pre(3) += x(8) *u(0);
     return x_pre;
   };
 
   //J_f
   auto J_f = [](const Eigen::Matrix<double,1,1> & u)
   {
-    double dt = u[0];
+    double dt = u(0);
     Eigen::Matrix<double,9,9> F;
     F <<  1,   0,   0,   0,   0,   dt,  0,   0,   0,
           0,   1,   0,   0,   0,   0,   dt,  0,   0,
@@ -90,7 +90,7 @@ void TrackState::AutoAimEKFInit()
     constexpr double Q_yaw = 100;
     constexpr double Q_r   = 800;//FIXME:ekf参数均来自RV，待测试
     Eigen::Matrix<double,9,9> q;
-    double dt = u[0];
+    double dt = u(0);
     double Exyz = 1/2*pow(dt,2)*Q_xyz;
     double Eyaw = 1/2*pow(dt,2)*Q_yaw;
     double Er = 1/2*pow(dt,2)*Q_r;
@@ -125,8 +125,10 @@ void TrackState::AutoAimEKFInit()
   //X_post
   Eigen::Matrix<double,9,1> X_post;
   X_post.Zero();
+  //CHI_Threshold
+  double CHI_Threshold = m_max_match_distance_;
   
-  m_ekf=EKF<double,9,4,1>(f,J_f,h,J_h,Q,R,P,X_post);
+  m_ekf=EKF<double,9,4,1>(f,J_f,h,J_h,Q,R,P,X_post,CHI_Threshold);
 }
 
 TrackState::TrackState() :
@@ -199,14 +201,13 @@ void TrackState::KFStateReset(Eigen::Vector3d initialPosVec) {
 
 }
 
-void TrackState::EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec) {
+void TrackState::EKFStateReset(Eigen::Matrix<double,9,1> initialPosVec) {
     //P
     Eigen::Matrix<double,9,9> P;
     P.setIdentity();
     //X_post
     Eigen::Matrix<double,9,1> X_post;
-    X_post.Zero();
-    X_post << 0, 0, 0, 0, initialPosVec;
+    X_post = initialPosVec;
 
     m_ekf.ResetEKF(P,X_post);
 
@@ -215,18 +216,16 @@ void TrackState::EKFStateReset(Eigen::Matrix<double,5,1> initialPosVec) {
 
 // 返回值：能否返回给电控Yaw Pitch（即当前跟踪数据能否认为有效）
 bool TrackState::UpdateState(ArmorDetector& detector) {
-    bool trackingValid = false;
+
     auto currentTime = high_resolution_clock::now();
     auto timeDiff = duration_cast<microseconds>(currentTime - m_PrevTime);
-    double T = timeDiff.count() / 1000000.0;
-    accutime += T;
-    // 是否有新帧。时停时用到的一个状态，没有新帧的时候很多东西是不应该更新的
+    double dt = timeDiff.count() / 1000000.0;
+    accutime += dt;
+    // 是否有新帧。
     bool hasNewFrame = false;
     hasNewFrame = FrameFetched.exchange(hasNewFrame);
-    bool shouldUpdate = true;
-    bool doUpdateInPause = Debug_SingleFrameOperations();
-    shouldUpdate = hasNewFrame || doUpdateInPause;
-    Debug_DisplayStateText();
+    isFoundTarget = false;
+    isTrackVaild  = false;
 
     RelCoordAtt pos { 0, 0, 0 };
     ImGui::Begin("Track State");
@@ -235,7 +234,9 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
         ArmorBox matched_armor;
         int TrackingArmorIndex = -1;
         int itemIndex = 0;
-        
+        Debug_ArmorPnPResultGraph(detector.armors[0], hasNewFrame);
+         Debug_DisplayStateText();
+
         // 如果还没有选中初始跟踪的装甲板，持续选择
         if(m_TrackingState == ShootState::LOST) 
         {
@@ -243,79 +244,61 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             return false;
         }
 
-        m_TargetState = shouldUpdate ? m_Kf.predict(T) : m_Kf.static_predict();
+        m_TargetState = hasNewFrame ? m_Kf.predict(dt) : m_Kf.static_predict();
+        if(!hasNewFrame) return RespondState(m_TrackingState);
 
         m_dbgScene.SetPredictedPosition(m_TargetState);
         
-
         matched_armor = ChooseArmor(detector);
         cv::Rodrigues(matched_armor.rMat, matched_armor.rMat);
-        if(detector.isFoundArmor())
-            Debug_ArmorPnPResultGraph(detector.armors[0], shouldUpdate);
 
         Debug_ArmorOnScreenPos(detector, TrackingArmorIndex, m_TargetState.head(3));
         m_dbgScene.Frame(itemIndex);
 
+        m_ArmorState << Eigen::Vector3d(matched_armor.resolvedPos),matched_armor.resolvedAng.yaw;
 
         Eigen::Vector3d resolvedPos(matched_armor.resolvedPos.x,
                                     matched_armor.resolvedPos.y,
                                     matched_armor.resolvedPos.z);
+        if (isFoundTarget && m_TrackingState != ShootState::LOSING_FOLLOW)
+        {
+          m_TargetState = m_Kf.update(resolvedPos);
+          if (min_position_diff < m_max_match_distance_) isTrackVaild =true;
+          else if (m_TrackingState >= ShootState::FOLLOWING ) 
+          {
+            // 正常跟踪情况下才能由于对方旋转、丢失跟踪而进入小陀螺模式
+            // 没有任何一块装甲板在阈值内。进入小陀螺检测逻辑，
+            // 如果有相同标号的装甲板，则认为它是小陀螺要跟踪的下一个目标
+            isTrackVaild =true;
+            BackToFollow();
+            // 判断进入小陀螺模式
+            double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw
+            //double current_yaw = std::atan2(current_position.y(), current_position.x());
+            double yaw_diff = get_shortest_angular_distance(last_yaw_, current_yaw);
 
-
-        if(m_TrackingState >= ShootState::STABILIZE && shouldUpdate) {
-            m_TargetState = m_Kf.update(resolvedPos);
-        }
-        if (m_TrackingState > ShootState::STABILIZE) {
-            // 只有当卡尔曼滤波器已经收敛之后才能开始判断距离
-            if (min_position_diff < m_max_match_distance_) { 
-                // Matching armor found
-                trackingValid = true;
-                if(shouldUpdate)
-                    m_TargetState = m_Kf.update(resolvedPos);
-            } else if (m_TrackingState >= ShootState::FOLLOWING) {
-                // 正常跟踪情况下才能由于对方旋转、丢失跟踪而进入小陀螺模式
-                // 没有任何一块装甲板在阈值内。进入小陀螺检测逻辑，
-                // 如果有相同标号的装甲板，则认为它是小陀螺要跟踪的下一个目标
-                for (const auto &armor: detector.armors) {
-                    if (armor.armorNum == tracking_id) {
-                        trackingValid = true;
-                        // 硬推一下KF
-                        KFStateReset(Eigen::Vector3d(armor.resolvedPos));
-                        Eigen::Vector3d resolvedPosVec = armor.resolvedPos;
-                        Eigen::VectorXd newTargetState;
-                        newTargetState.setZero(6);
-                        newTargetState << resolvedPosVec, m_TargetState[3], m_TargetState[4], m_TargetState[5];
-                        m_TargetState = newTargetState;
-                        // 判断进入小陀螺模式
-                        double current_yaw = atan2(m_TargetState(1), m_TargetState(0));//计算yaw
-                        //double current_yaw = std::atan2(current_position.y(), current_position.x());
-                        double yaw_diff = get_shortest_angular_distance(last_yaw_, current_yaw);
-
-                        if (std::abs(yaw_diff) > max_jump_angle) {
-                            jump_count_++;
-                            if (jump_count_ > 1 && std::signbit(yaw_diff) == std::signbit(last_jump_yaw_diff_)) {
-                                jump_period_ = spintime;
-                                m_TrackingState = ShootState::SPINNING;
-                            }
-                            auto spintimeDiff = duration_cast<microseconds>(currentTime - last_jump_time_);
-                            spintime = spintimeDiff.count() / 1000000.0;
-                            last_jump_time_ = currentTime;
-                            last_jump_position_ = {m_TargetState(0) ,m_TargetState(1) ,m_TargetState(2)};
-                            last_jump_yaw_diff_ = yaw_diff;
-                            accutime=0;//if in spinning,clear the accutime
-                        }
-                        ImGui::Begin("spin00");
-                        ImGui::Text("yaw_diff:%lf",yaw_diff);
-                        //ImGui::Text("")
-                        ImGui::End();
-                        last_yaw_ = current_yaw;
-                        break;
-                    }
+            if (std::abs(yaw_diff) > max_jump_angle) 
+            {
+                jump_count_++;
+                if (jump_count_ > 1 && std::signbit(yaw_diff) == std::signbit(last_jump_yaw_diff_)) 
+                {
+                    jump_period_ = spintime;
+                    m_TrackingState = ShootState::SPINNING;
                 }
-
+                auto spintimeDiff = duration_cast<microseconds>(currentTime - last_jump_time_);
+                spintime = spintimeDiff.count() / 1000000.0;
+                last_jump_time_ = currentTime;
+                last_jump_position_ = {m_TargetState(0) ,m_TargetState(1) ,m_TargetState(2)};
+                last_jump_yaw_diff_ = yaw_diff;
+                accutime=0;//if in spinning,clear the accutime
             }
+            ImGui::Begin("spin00");
+            ImGui::Text("yaw_diff:%lf",yaw_diff);
+            ImGui::End();
+            last_yaw_ = current_yaw;
+          }
         }
 
+        //FIXME:如果无新帧不保持这个的话，会怎样
         // DEBUG DISPLAY
         if (matched_armor.type == ArmorType::SMALL_ARMOR){
             ImGui::Text("Armor Type: SMALL ARMOR" );
@@ -339,107 +322,87 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
 
         {
             static DbgGraph minDiffGraph(100);
-            if(shouldUpdate) minDiffGraph.NewData(min_position_diff);
+            if(hasNewFrame) minDiffGraph.NewData(min_position_diff);
             minDiffGraph.Frame("MinDiff", nullptr, 0.0f, 150.0f, ImVec2(0, 80.0f));
         }
     }
-
-    // 状态机更新
-    if(shouldUpdate) {
-        switch(m_TrackingState) {
-            case ShootState::LOST:
-                break;
-
-            case ShootState::STABILIZE:
-                // 等待Kalman收敛而等待的数帧
-                if(m_FrameCounter++ >= 4) {
-                    m_FrameCounter = 0;
-                    if(detector.isFoundArmor())
-                        m_TrackingState = ShootState::WAITING;
-                    else {
-                        m_TrackingState = ShootState::LOST;
-                        KFStateReset();
-                    }
-                }
-                break;
-                
-            case ShootState::WAITING:
-                // 在一段时间跟踪后确认当前跟踪的目标，切换到已识别状态
-                if(!detector.isFoundArmor() || !trackingValid) {
-                    m_TrackingState = ShootState::LOST;
-                    KFStateReset();
-                    break;
-                }
-                if(m_FrameCounter++ >= 5) {
-                    m_FrameCounter = 0;
-                    m_TrackingState = ShootState::FOLLOWING;
-                }
-                break;
-
-            case ShootState::FOLLOWING:
-                // 已经认为获得了稳定的跟踪状态
-                if (!trackingValid) {
-                    // 丢了？没有完全丢的状态，此时可以重新获得跟踪
-                    // 小陀螺应该也是从这个状态进入的
-                    m_FrameCounter = 0;
-                    m_TimeSecondCounter = currentTime;
-                    m_TrackingState = ShootState::LOSING_FOLLOW;
-                    doFire = true;
-                }
-                break;
-            case ShootState::LOSING_FOLLOW: {
-                // 丢失跟踪状态，等待一段时间后切换到丢失状态。
-                // 注意这个状态下依然可以触发小陀螺
-                constexpr double LoseTrackingThreshold = 0.3; // 秒
-                double lostTime =
-                        duration_cast<microseconds>(currentTime - m_TimeSecondCounter).count() / 1000000.0;
-                if (!trackingValid) {
-                    if (lostTime > LoseTrackingThreshold) {
-                        m_TrackingState = ShootState::LOST;
-                    }
-                    doFire = false;
-                } else {
-                    m_TrackingState = ShootState::FOLLOWING;
-                    doFire = true;
-                }
-                break;
+    switch(m_TrackingState) {
+      //FIXME: stablize和waiting可以优化
+      case ShootState::STABILIZE:
+          // 等待Kalman收敛而等待的数帧
+          if(m_FrameCounter++ >= 10) {
+              m_FrameCounter = 0;
+              if(isFoundTarget)
+                  m_TrackingState = ShootState::WAITING;
+              else {
+                  m_TrackingState = ShootState::LOST;
+              }
+          }
+          break;
+          
+      case ShootState::WAITING:
+          // 在一段时间跟踪后确认当前跟踪的目标，切换到已识别状态
+          if(isFoundTarget && isTrackVaild) {
+            if(m_FrameCounter++ >= 5) {
+                m_FrameCounter = 0;
+                m_TrackingState = ShootState::FOLLOWING;
             }
-            case ShootState::SPINNING: {
-                if ((abs(spintime - jump_period_) < allow_following_range) && accutime < 5 * spintime) {//the first half:judge each observed time matches the initial measurement;the second half:judge whether the target in spinning
-                    doFire = true;
-                }
-                else {
-                    m_TargetState(0) = last_jump_position_.x();
-                    m_TargetState(1) = last_jump_position_.y();
-                    m_TargetState(2) = last_jump_position_.z();
-                    m_TargetState(3) = 0;
-                    m_TargetState(4) = 0;
-                    m_TargetState(5) = 0;
+          }else m_TrackingState = ShootState::LOST;
+          break;
 
-                    doFire = false;
-                    m_TrackingState = ShootState::LOSING_FOLLOW;
-                }
-            }
-            break;
-        }
-    }
+      case ShootState::FOLLOWING:
+          // 已经认为获得了稳定的跟踪状态
+          if (!isFoundTarget) {
+              // 丢了？没有完全丢的状态，此时可以重新获得跟踪
+              // 小陀螺应该也是从这个状态进入的
+              m_FrameCounter = 0;
+              m_TimeSecondCounter = currentTime;
+              m_TrackingState = ShootState::LOSING_FOLLOW;
+              doFire = true;
+          }
+          break;
+      case ShootState::LOSING_FOLLOW: {
+          // 丢失跟踪状态，等待一段时间后切换到丢失状态。
+          // 注意这个状态下依然可以触发小陀螺
+          constexpr double LoseTrackingThreshold = 0.3; // 秒
+          double lostTime =
+                  duration_cast<microseconds>(currentTime - m_TimeSecondCounter).count() / 1000000.0;
+          if (!isFoundTarget) {
+              if (lostTime > LoseTrackingThreshold) {
+                  m_TrackingState = ShootState::LOST;
+              }
+              doFire = false;
+          } else {
+            BackToFollow();//RESET EKF
+            m_TrackingState = ShootState::FOLLOWING;
+            doFire = true;
+          }
+          break;
+      }
+      case ShootState::SPINNING: {
+          if ((abs(spintime - jump_period_) < allow_following_range) && accutime < 5 * spintime) {//the first half:judge each observed time matches the initial measurement;the second half:judge whether the target in spinning
+              doFire = true;
+          }
+          else {
+              m_TargetState(0) = last_jump_position_.x();
+              m_TargetState(1) = last_jump_position_.y();
+              m_TargetState(2) = last_jump_position_.z();
+              m_TargetState(3) = 0;
+              m_TargetState(4) = 0;
+              m_TargetState(5) = 0;
 
+              doFire = false;
+              m_TrackingState = ShootState::LOSING_FOLLOW;
+          }
+      }
+      break;
+  }
 
     ImGui::End();
     m_PrevTime = currentTime;
 
+   return RespondState(m_TrackingState);
 
-    switch(m_TrackingState) {
-        case ShootState::LOST:
-        case ShootState::STABILIZE:
-        case ShootState::WAITING:
-            return false;
-        case ShootState::FOLLOWING:
-        case ShootState::SPINNING:
-            return true;
-        default:
-            return false;
-    }
 }
 //选定初始化装甲板
 void TrackState::SetInitialArmor(ArmorDetector& detector)
@@ -464,11 +427,23 @@ void TrackState::SetInitialArmor(ArmorDetector& detector)
     m_TrackingState = ShootState::STABILIZE;
 }
 
+void TrackState::BackToFollow()
+{
+  // Eigen::Vector3d resolvedPos;
+  // resolvedPos = m_ArmorState.block(0,0,2,0);
+  // KFStateReset(resolvedPos);
+  Eigen::Matrix<double,9,1> armorstate;
+  armorstate << m_ArmorState,m_TargetState(4),m_TargetState(5),m_TargetState(6),m_TargetState(7),m_TargetState(8);
+  EKFStateReset(armorstate);
+  m_TargetState = armorstate;
+}
+
+
 //选定装甲板
 ArmorBox TrackState::ChooseArmor(ArmorDetector &detector)
 {
   min_position_diff = DBL_MAX;
-  ArmorBox matched_armor;
+  ArmorBox matched_armor = detector.armors[0];
   Eigen::Vector3d predictedPos = m_TargetState.head(3);
   for (auto & armor : detector.armors) {
     if (armor.armorNum != tracking_id) continue;//应符合追踪数字
@@ -481,17 +456,28 @@ ArmorBox TrackState::ChooseArmor(ArmorDetector &detector)
         matched_armor = armor;
     }
   }
+  if(min_position_diff != DBL_MAX) isFoundTarget = true;//未找到追踪装甲板
   return matched_armor;
 }
+//回应状态
+bool TrackState::RespondState(const ShootState & track_state)
+{
+  switch(track_state) {
+      case ShootState::LOST:
+      case ShootState::STABILIZE:
+      case ShootState::WAITING:
+      case ShootState::LOSING_FOLLOW:
+          return false;
+      case ShootState::FOLLOWING:
+      case ShootState::SPINNING:
+          return true;
+      default:
+          return false;
+  }
+}
 
-// //获取装甲板运动序列
-// Eigen::VectorXd TrackState::GetArmorState(const ArmorBox & target)
-// {
-//   Mat mtxR,mtxQ;
-//   Eigen::VectorXd armor_state;
-//   cv::Vec3d eulerAngles = cv::RQDecomp3x3(target.rMat, mtxR, mtxQ);//Pitch Yaw Roll
-//   //armor_state << target.
-// }
+
+
 
 double TrackState::get_shortest_angular_distance(double last_yaw, double current_yaw)
 {
@@ -603,21 +589,6 @@ void TrackState::Debug_ArmorPnPResultGraph(ArmorBox &armor, bool newData) {
     ImGui::End();
 }
 
-bool TrackState::Debug_SingleFrameOperations() {
-    static bool doSingleFrame = false;
-    // 是否在时停时更新状态。一般是不用的，但是万一用得到呢？
-    static bool enableUpdateInPause = false;
-
-    ImGui::Begin("Track State");
-
-    ImGui::Checkbox("Single frame", &doSingleFrame); ImGui::SameLine();
-    SingleFrameMode.store(doSingleFrame);
-    SingleFrameFlag = ImGui::Button("Next frame");
-    ImGui::Checkbox("Update states in pause", &enableUpdateInPause);
-
-    ImGui::End();
-    return enableUpdateInPause;
-}
 
 void TrackState::SetCameraMatrix(cv::Mat& matrix) {
     cv::cv2eigen(matrix, m_CameraMatrix);
