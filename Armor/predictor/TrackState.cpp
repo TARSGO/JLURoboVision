@@ -30,6 +30,106 @@ static void CustomTextOntoDrawList(ImDrawList* list, ImVec2 pos, ImU32 col, cons
     list->AddText(pos, col, text, text_end);
     va_end(args);
 }
+void TrackState::AntiOutpostEKFInit(Eigen::VectorXd targetstate)
+{
+  //f——定心旋转
+  auto f = [](const Eigen::Matrix<double,9,1> & x,const Eigen::Matrix<double,1,1> & u)
+  {
+    Eigen::Matrix<double,9,1> x_pre = x;
+    x_pre(0) = x(5) ;
+    x_pre(1) = x(6) ;
+    x_pre(2) = x(7) ;
+    x_pre(3) += x(8) *u(0);
+    return x_pre;
+  };
+
+  //J_f
+  auto J_f = [](const Eigen::Matrix<double,1,1> & u)
+  {
+    double dt = u(0);
+    Eigen::Matrix<double,9,9> F;
+    F <<  1,   0,   0,   0,   0,   0,  0,   0,   0,
+          0,   1,   0,   0,   0,   0,   0,  0,   0,
+          0,   0,   1,   0,   0,   0,   0,   0,  0, 
+          0,   0,   0,   1,   0,   0,   0,   0,   dt,
+          0,   0,   0,   0,   1,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   1,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   1,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   1,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   1;
+    return F;
+  };  
+
+  //h
+  auto h = [](const Eigen::Matrix<double,9,1> & x_pre)
+  {
+    Eigen::Matrix<double,4,1> z;
+    z(0) = x_pre(0) + x_pre(4) * cos(x_pre(3));
+    z(1) = x_pre(1) + x_pre(4) * sin(x_pre(3));
+    z(2) = x_pre(2);
+    z(3) = x_pre(3);
+    return z;
+  };
+
+  //J_h
+  auto J_h = [](const Eigen::Matrix<double,9,1> & x_pre)
+  {
+    Eigen::Matrix<double,4,9> H;
+    H <<  1,   0,   0,    x_pre(4)*sin(x_pre(3)),  -cos(x_pre(3)),  0,   0,  0,  0,
+          0,   1,   0,   -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)),  0,   0,  0,  0,
+          0,   0,   1,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   1,   0,   0,   0,   0,   0;
+    return H;
+  };
+
+  //Q--由于我们采用恒速模型，故假定加速度=0且满足正态分布，故噪声主要来自于旋转中心平移加速度和旋转加速度，其对位移和速度的影响分别为1/2*dt^2*error和dt*error,故需要引入控制变量u
+  auto Q = [](const Eigen::Matrix<double,1,1> & u)
+  {
+    constexpr double Q_xyz = 20;
+    constexpr double Q_yaw = 100;
+    constexpr double Q_r   = 800;//FIXME:ekf参数均来自RV，待测试
+    Eigen::Matrix<double,9,9> q;
+    double dt = u(0);
+    double Exyz = 1/2*pow(dt,2)*Q_xyz;
+    double Eyaw = 1/2*pow(dt,2)*Q_yaw;
+    double Er = 1/2*pow(dt,2)*Q_r;
+    double Ev_xyz = dt * Q_xyz;
+    double Ev_yaw = dt * Q_yaw;
+    q << Exyz*Exyz, 0, 0, 0, 0, Exyz*Ev_xyz, 0, 0, 0,
+         0,Exyz*Exyz, 0, 0, 0, 0, Exyz*Ev_xyz, 0, 0,
+         0, 0, Exyz*Exyz, 0, 0, 0, 0, Exyz*Ev_xyz, 0,
+         0, 0, 0, Eyaw*Eyaw, 0, 0, 0, 0, Eyaw*Ev_yaw,
+         0, 0, 0, 0, Er*Er, 0, 0, 0, 0,         
+         Ev_xyz*Exyz, 0, 0, 0, 0, Ev_xyz*Ev_xyz, 0, 0, 0, 
+         0, Ev_xyz*Exyz, 0, 0, 0, 0, Ev_xyz*Ev_xyz, 0, 0, 
+         0, 0, Ev_xyz*Exyz, 0, 0, 0, 0, Ev_xyz*Ev_xyz, 0, 
+         0, 0, 0, Ev_yaw*Eyaw, 0, 0, 0, 0, Ev_yaw*Ev_yaw;
+    return q;
+  };
+  //R
+  auto R = []()
+  {
+    constexpr double R_xyz = 0.05;
+    constexpr double R_yaw = 0.02;
+    Eigen::Matrix<double,4,4> r;
+    r << R_xyz, 0, 0, 0,
+         0, R_xyz, 0, 0,
+         0, 0, R_xyz, 0,
+         0, 0, 0, R_yaw;
+    return r;
+  };
+  //P
+  Eigen::Matrix<double,9,9> P;
+  P.setIdentity();
+  //X_post
+  Eigen::Matrix<double,9,1> X_post;
+  
+  X_post << targetstate(0),targetstate(1),targetstate(2),targetstate(3),553,0,0,0,(targetstate(4)/abs(targetstate(4)))*0.4*360;//置固定R和Vyaw
+  //CHI_Threshold
+  double CHI_Threshold = m_max_match_distance_;
+  
+  m_ekf=EKF<double,9,4,1>(f,J_f,h,J_h,Q,R,P,X_post,CHI_Threshold);
+}
 
 void TrackState::AutoAimEKFInit()
 {
@@ -76,10 +176,10 @@ void TrackState::AutoAimEKFInit()
   auto J_h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,9> H;
-    H <<  1,   0,   0,   x_pre(4)*sin(x_pre(3)),   -cos(x_pre(3)),   0,   0, 0,   0,
-      0,   1,   0,   -x_pre(4)*cos(x_pre(3)),    -sin(x_pre(3)),   0,   0,0,  0,
-      0,   0,   1,   0,   0,   0,   0,          0,   0,
-      0,   0,   0,   1,   0,   0,   0,          0,   0;
+    H <<  1,   0,   0,    x_pre(4)*sin(x_pre(3)),  -cos(x_pre(3)),  0,   0,  0,  0,
+          0,   1,   0,   -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)),  0,   0,  0,  0,
+          0,   0,   1,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   1,   0,   0,   0,   0,   0;
     return H;
   };
 
@@ -158,8 +258,8 @@ TrackState::TrackState() :
     file_settings.release();
 
     AutoAimEKFInit();
+    isAntiOutpost = false;
     m_TrackingState = ShootState::LOST;
-    KFStateReset();
 }
 
 TrackState::~TrackState() {
@@ -209,7 +309,6 @@ void TrackState::EKFStateReset(Eigen::Matrix<double,9,1> initialPosVec) {
     X_post = initialPosVec;
 
     m_ekf.ResetEKF(P,X_post);
-
 }
 
 
@@ -325,7 +424,6 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
         }
     }
     switch(m_TrackingState) {
-      //FIXME: stablize和waiting可以优化
       case ShootState::STABILIZE:
           // 等待Kalman收敛而等待的数帧
           if(m_FrameCounter++ >= 10) {
@@ -350,7 +448,6 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
 
       case ShootState::FOLLOWING:
           // 已经认为获得了稳定的跟踪状态
-          if (tracking_id == 54) isAntiOutpost = true;
           if (!isFoundTarget) {
               // 丢了？没有完全丢的状态，此时可以重新获得跟踪
               // 小陀螺应该也是从这个状态进入的
@@ -369,6 +466,11 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
           if (!isFoundTarget) {
               if (lostTime > LoseTrackingThreshold) {
                   m_TrackingState = ShootState::LOST;
+                  if (tracking_id == 54 && isAntiOutpost == true)
+                  {
+                    AutoAimEKFInit();
+                    isAntiOutpost = false;
+                  }
               }
               doFire = false;
           } else {
@@ -379,6 +481,11 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
           break;
       }
       case ShootState::SPINNING: {
+          if (tracking_id == 54 && isAntiOutpost == false)
+          {
+            AntiOutpostEKFInit(m_TargetState);
+            isAntiOutpost = true;
+          }
           if ((abs(spintime - jump_period_) < allow_following_range) && accutime < 5 * spintime) {//the first half:judge each observed time matches the initial measurement;the second half:judge whether the target in spinning
               doFire = true;
           }
@@ -412,10 +519,9 @@ void TrackState::SetInitialArmor(ArmorDetector& detector)
         }
     }
 
-    // KF SetInitialArmor
-    EKFStateReset();
+    // EKF SetInitialArmor
     tracking_id = chosenArmor.armorNum;
-    isAntiOutpost = false;
+    EKFStateReset();
     m_TrackingState = ShootState::STABILIZE;
 }
 

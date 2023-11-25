@@ -261,6 +261,17 @@ private:
 
 };
 
+
+class Outpost 
+{
+public:
+  void AntiOutpostEKFInit();
+  //Eigen::VectorXd FixOutpost(Eigen::Matrix <double,4,1> m_ArmorState, double dt);//使用恒角速度模型对前哨站进行预测和解算
+private:  
+  EKF<double,9,4,1> CV_EKF;//装载恒角速度模型
+};
+
+
     // 维护跟踪装甲板、解算目标车辆的状态
 class TrackState {
 public:
@@ -283,6 +294,8 @@ public:
 protected:
     void AntiSpinInit();
     void AutoAimEKFInit();
+    //反前哨站先用EKF去迭代得到大致的速度及速度方向，根据该信息确定恒速模型的速度取值
+    void AntiOutpostEKFInit(Eigen::VectorXd targetstate);
     void SetInitialArmor(ArmorDetector &detector);
     void KFStateReset(Eigen::Vector3d initialPosVec = Eigen::Vector3d().setZero());
     void EKFStateReset(Eigen::Matrix<double,9,1> initialPosVec = Eigen::Matrix<double,9,1>().setZero());
@@ -305,12 +318,12 @@ private:
     KalmanFilter m_Kf;
     EKF<double,9,4,1> m_ekf;
 
+
     ShootState m_TrackingState;// 维护追踪器的状态
     Eigen::Matrix <double,4,1> m_ArmorState;//装甲板运动序列
     bool isFoundTarget;
     bool isTrackVaild;
     bool isAntiOutpost;
-    Outpost outpost;
     int m_DetectCount_;
     int m_LostCount_;
     int m_FrameCounter;
@@ -338,14 +351,6 @@ private:
     double last_yaw_;
     double last_jump_yaw_diff_;
 
-};
-
-class Outpost : public TrackState
-{
-  public:
-  Eigen::VectorXd FixOutpost(Eigen::Matrix <double,4,1> m_ArmorState);//使用恒角速度模型对前哨站进行预测和解算
-  private:  
-    KalmanFilter CV_KF;//装载恒速模型
 };
 
 #endif // !ARMOR

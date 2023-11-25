@@ -4,7 +4,7 @@
 #include <functional>
 /*
 反陀螺：
-  X状态量：X_c ,Y_c ,Z_c ,V_x ,V_y ,V_z ,yaw ,v_yaw ,r
+  X状态量：X_c ,Y_c ,Z_c ,yaw ,r , V_x ,V_y ,V_z ,v_yaw 
   Y观测量：X_r ,Y_r ,Z_r ,yaw  
   Z输入量：dt
 */
