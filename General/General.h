@@ -195,6 +195,7 @@ inline double easyFilter(double angle_yaw)
   if(angle<-90)angle+=180;
   return angle;
 }
+
 std::string CurrentPreciseTime();
 std::ostream& HexDump(std::ostream& os, const void *buffer,
                       std::size_t bufsize, bool showPrintableChars = true);

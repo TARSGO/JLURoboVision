@@ -232,7 +232,6 @@ void TrackState::AutoAimEKFInit()
 }
 
 TrackState::TrackState() :
-        m_Kf({}),
         m_TargetState(Eigen::VectorXd(6).setZero())  
 {
 //    YAML::Node params = YAML::LoadFile("../General/config.yaml");
