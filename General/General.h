@@ -78,7 +78,7 @@ enum class Color
 };
 
 struct RotationAtt {
-    double yaw, pitch, distance;
+    double pitch, yaw, distance;
 };
 struct RelCoordAtt {
     double x, y, z;

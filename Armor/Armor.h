@@ -31,8 +31,8 @@ enum class ShootState
 {
     LOST,           //
     LOSING_FOLLOW,      //
-    WAITING,        //    
     STABILIZE,      //
+    WAITING,        //    
     FOLLOWING,       //
     SPINNING,
 };

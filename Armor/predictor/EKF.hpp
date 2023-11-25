@@ -61,7 +61,7 @@ public:
     H = J_h(X_pre);
     R = update_R();
     Residual = z - h(X_pre);
-    K = P_pre * H.transpose() * (H * P_pre * H.transpose() + R);
+    K = P_pre * H.transpose() * (H * P_pre * H.transpose() + R).inverse();
     X_post = X_pre + K * Residual;
     P_post = (I - K * H) * P_pre;
     return X_post;

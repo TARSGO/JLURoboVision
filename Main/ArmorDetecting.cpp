@@ -113,9 +113,8 @@ void armorDetectingThread()
               ImGui::Text("armor_yaw: %lf", Cam_ang(1) );
               ImGui::Text("armor_roll: %lf", Cam_ang(2) );
               ImGui::End();
-              i->resolvedPos = { Rn(0), Rn(1), Rn(2) };
-              i->resolvedAng = {double(Cam_ang(0)) + received.pitch, double(Cam_ang(1)) + received.yaw, double(Cam_ang(2))};
-              cout<<"yaw"<<double(Cam_ang(1)) + received.yaw<<endl;
+              i->resolvedPos = { Rn(0), Rn(1), Rn(2)};
+              i->resolvedAng = {Cam_ang(0) + received.pitch, Cam_ang(1) + received.yaw, Cam_ang(2)};        
           }
           bool targetValid = trackState.UpdateState(Armor);
           RotationAtt rotAtt, rotAtt1;

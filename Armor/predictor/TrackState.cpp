@@ -165,9 +165,9 @@ void TrackState::AutoAimEKFInit()
   auto h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,1> z;
-    z(0) = x_pre(0) + x_pre(4) * cos(x_pre(3));
-    z(1) = x_pre(1) + x_pre(4) * sin(x_pre(3));
-    z(2) = x_pre(2);
+    z(0) = x_pre(0) - x_pre(4) * sin(x_pre(3));//x左右
+    z(1) = x_pre(1) ;//y上下
+    z(2) = x_pre(2) - x_pre(4) * cos(x_pre(3));//z前后
     z(3) = x_pre(3);
     return z;
   };
@@ -176,9 +176,9 @@ void TrackState::AutoAimEKFInit()
   auto J_h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,9> H;
-    H <<  1,   0,   0,    x_pre(4)*sin(x_pre(3)),  -cos(x_pre(3)),  0,   0,  0,  0,
-          0,   1,   0,   -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)),  0,   0,  0,  0,
-          0,   0,   1,   0,   0,   0,   0,   0,   0,
+    H <<  1,   0,   0,  -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)) ,  0,   0,  0,  0,
+          0,   1,   0,  0, 0 ,  0,   0,  0,  0,
+          0,   0,   1,  x_pre(4) *sin(x_pre(3)),  -cos(x_pre(3)),   0,   0,   0,   0,
           0,   0,   0,   1,   0,   0,   0,   0,   0;
     return H;
   };
@@ -232,6 +232,7 @@ void TrackState::AutoAimEKFInit()
 }
 
 TrackState::TrackState() :
+        m_Kf({}),
         m_TargetState(Eigen::VectorXd(6).setZero())  
 {
 //    YAML::Node params = YAML::LoadFile("../General/config.yaml");
@@ -331,7 +332,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
         int TrackingArmorIndex = -1;
         int itemIndex = 0;
         Debug_ArmorPnPResultGraph(detector.armors[0], hasNewFrame);
-         Debug_DisplayStateText();
+        Debug_DisplayStateText();
 
         // 如果还没有选中初始跟踪的装甲板，持续选择
         if(m_TrackingState == ShootState::LOST) 
@@ -351,11 +352,11 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
 
         m_ArmorState << Eigen::Vector3d(matched_armor.resolvedPos),matched_armor.resolvedAng.yaw;
 
-        if (isFoundTarget && m_TrackingState != ShootState::LOSING_FOLLOW)
+        if (isFoundTarget && m_TrackingState >= ShootState::STABILIZE)
         {
           if (min_position_diff > m_max_match_distance_)
           {  
-            if (m_TrackingState >= ShootState::FOLLOWING ) 
+            if (m_TrackingState >= ShootState::FOLLOWING) 
             {
               // 正常跟踪情况下才能由于对方旋转、丢失跟踪而进入小陀螺模式
               // 没有任何一块装甲板在阈值内。进入小陀螺检测逻辑，
@@ -392,8 +393,25 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
               isTrackVaild =true;
           }
       }
-    
-
+      if(m_TrackingState >= ShootState::STABILIZE){
+      ImGui::Begin("EKF----OUTPUT");
+      ImGui::Text("X_c: %lf", m_TargetState(0));
+      ImGui::Text("Y_c: %lf", m_TargetState(1));
+      ImGui::Text("Z_c: %lf", m_TargetState(2));
+      ImGui::Text("Yaw: %lf", m_TargetState(3));
+      ImGui::Text("R: %lf", m_TargetState(4)); 
+      ImGui::Text("V_x: %lf", m_TargetState(5));
+      ImGui::Text("V_y: %lf", m_TargetState(6));
+      ImGui::Text("V_z: %lf", m_TargetState(7));
+      ImGui::Text("V_yaw: %lf", m_TargetState(8));    
+      ImGui::End();
+      ImGui::Begin("EKF----INPUT");
+      ImGui::Text("X_r: %lf", m_ArmorState(0));
+      ImGui::Text("Y_r: %lf", m_ArmorState(1));
+      ImGui::Text("Z_r: %lf", m_ArmorState(2));
+      ImGui::Text("Yaw: %lf", m_ArmorState(3));  
+      ImGui::End();
+      }
         //FIXME:如果无新帧不保持这个的话，会怎样
         // DEBUG DISPLAY
         if (matched_armor.type == ArmorType::SMALL_ARMOR){
@@ -442,7 +460,7 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
                 m_FrameCounter = 0;
                 m_TrackingState = ShootState::FOLLOWING;
             }
-          }else m_TrackingState = ShootState::LOST;
+          }else m_TrackingState = ShootState::STABILIZE;
           break;
 
       case ShootState::FOLLOWING:
