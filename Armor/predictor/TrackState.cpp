@@ -64,9 +64,9 @@ void TrackState::AntiOutpostEKFInit(Eigen::VectorXd targetstate)
   auto h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,1> z;
-    z(0) = x_pre(0) + x_pre(4) * cos(x_pre(3));
-    z(1) = x_pre(1) + x_pre(4) * sin(x_pre(3));
-    z(2) = x_pre(2);
+    z(0) = x_pre(0) - x_pre(4) * sin(x_pre(3));//x左右
+    z(1) = x_pre(1) ;//y上下
+    z(2) = x_pre(2) - x_pre(4) * cos(x_pre(3));//z前后
     z(3) = x_pre(3);
     return z;
   };
@@ -75,9 +75,9 @@ void TrackState::AntiOutpostEKFInit(Eigen::VectorXd targetstate)
   auto J_h = [](const Eigen::Matrix<double,9,1> & x_pre)
   {
     Eigen::Matrix<double,4,9> H;
-    H <<  1,   0,   0,    x_pre(4)*sin(x_pre(3)),  -cos(x_pre(3)),  0,   0,  0,  0,
-          0,   1,   0,   -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)),  0,   0,  0,  0,
-          0,   0,   1,   0,   0,   0,   0,   0,   0,
+    H <<  1,   0,   0,  -x_pre(4)*cos(x_pre(3)),  -sin(x_pre(3)) ,  0,   0,  0,  0,
+          0,   1,   0,  0, 0 ,  0,   0,  0,  0,
+          0,   0,   1,  x_pre(4) *sin(x_pre(3)),  -cos(x_pre(3)),   0,   0,   0,   0,
           0,   0,   0,   1,   0,   0,   0,   0,   0;
     return H;
   };
