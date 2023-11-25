@@ -28,9 +28,11 @@ void showLights(Mat & image, const vector<LightBar> & lights)
 
             //show the lights' center point x,y value 显示灯条的中心坐标点\角度\长度
             putText(lightDisplay, std::to_string(int(light.angle)), light.center - Point2f(0, 15), cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
-            putText(lightDisplay, std::to_string(int(light.center.x)), light.center, cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
-            putText(lightDisplay, std::to_string(int(light.center.y)), light.center + Point2f(0, 15), cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
-            putText(lightDisplay, std::to_string(int(light.length)), light.center + Point2f(0, 30), cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
+            // putText(lightDisplay, std::to_string(int(light.center.x)), light.center, cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
+            // putText(lightDisplay, std::to_string(int(light.center.y)), light.center + Point2f(0, 15), cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
+            // putText(lightDisplay, std::to_string(int(light.length)), light.center + Point2f(0, 30), cv::FONT_HERSHEY_PLAIN, 1, Scalar(0, 255, 0), 1, 8, false);
+            putText(lightDisplay, std::to_string(light.area), light.center + Point2f(0, 30), cv::FONT_HERSHEY_PLAIN, 2, Scalar(255, 255, 255), 1, 8, false);
+            
         }
     }
         //if detector does not find lights 如果没找到灯条
@@ -70,6 +72,7 @@ void ArmorDetector::showArmors(Mat & image, const vector<ArmorBox> & armors, con
         {
             //draw the center 画中心
             circle(armorDisplay, armor.center, 2, Scalar(0, 255, 0), 2);
+
             for (size_t i = 0; i < 4; i++)
             {
                 cv::circle(armorDisplay, armor.l_light.top, 3, cv::Scalar(0, 255, 0),  2, 8, 0);
@@ -108,7 +111,6 @@ void ArmorDetector::showArmors(Mat & image, const vector<ArmorBox> & armors, con
     line(armorDisplay, Point(image.cols/2, 0), Point(image.cols/2 ,image.rows), Scalar(0, 0, 255), 1, 8, 0);
     line(armorDisplay, Point(0 ,image.rows/2), Point(image.cols ,image.rows/2), Scalar(0, 0, 255), 1, 8, 0);
     //line(armorDisplay, armor.l_light.top, armor.r_light.bottom, Scalar(255, 255, 255), 2, 8, 0);
-
 
     //show the result armors image 显示结果图
     imshow("Armor Monitor",armorDisplay);

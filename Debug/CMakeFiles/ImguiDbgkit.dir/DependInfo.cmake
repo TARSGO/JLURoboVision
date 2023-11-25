@@ -1,45 +1,28 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
-  "CXX"
   )
-# The set of files for implicit dependencies of each language:
-set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/Dbg3DScene.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/Dbg3DScene.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/DbgGraph.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/DbgGraph.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/GraphEditor.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/GraphEditor.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImCurveEdit.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImCurveEdit.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGradient.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGradient.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGuizmo.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGuizmo.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImGuizmo/ImSequencer.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImSequencer.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/ImguiDbgkit.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/ImguiDbgkit.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_opengl3.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_opengl3.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_sdl.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_sdl.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_demo.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_demo.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_draw.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_draw.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_tables.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_tables.cpp.o"
-  "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/imgui/imgui_widgets.cpp" "/home/jlu/Desktop/jlurobo-vision-2023-master/Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_widgets.cpp.o"
-  )
-set(CMAKE_CXX_COMPILER_ID "GNU")
 
-# The include file search paths:
-set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/usr/local/include/opencv4"
-  "/usr/local/include/eigen3"
-  "."
-  "AngleSolver"
-  "Armor"
-  "Can"
-  "Debug"
-  "General"
-  "GxCamera"
-  "GxCamera/GxSDK"
-  "Main"
-  "Serial"
-  "Wind"
-  "/usr/include/SDL2"
-  "Debug/imgui"
-  "Debug/imGuIZMO.quat"
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/Dbg3DScene.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/Dbg3DScene.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/Dbg3DScene.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/DbgGraph.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/DbgGraph.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/DbgGraph.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImGuizmo/GraphEditor.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/GraphEditor.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/GraphEditor.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImGuizmo/ImCurveEdit.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImCurveEdit.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImCurveEdit.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGradient.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGradient.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGradient.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImGuizmo/ImGuizmo.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGuizmo.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImGuizmo.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImGuizmo/ImSequencer.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImSequencer.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImGuizmo/ImSequencer.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/ImguiDbgkit.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/ImguiDbgkit.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/ImguiDbgkit.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_opengl3.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_opengl3.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_opengl3.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/backends/imgui_impl_sdl.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_sdl.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/backends/imgui_impl_sdl.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/imgui.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/imgui_demo.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_demo.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_demo.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/imgui_draw.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_draw.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_draw.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/imgui_tables.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_tables.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_tables.cpp.o.d"
+  "/home/shaobing2/Desktop/Final/jlurobo-vision-2023-master/Debug/imgui/imgui_widgets.cpp" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_widgets.cpp.o" "gcc" "Debug/CMakeFiles/ImguiDbgkit.dir/imgui/imgui_widgets.cpp.o.d"
   )
 
 # Targets to which this target links.

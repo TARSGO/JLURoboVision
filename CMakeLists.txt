@@ -32,7 +32,7 @@ if(UNIX)
     )
 elseif(WIN32)
     include("windows_libs.cmake")
-    include(${WIN_OPENCV_CONFIG})
+    include(${WIN_OPENCV_CONFIG})#这些是在Windows的环境变量里面定义的
     include(${WIN_EIGEN3_CONFIG})
     include(${EIGEN3_USE_FILE})
     include(${WIN_CERES_CONFIG})
@@ -108,10 +108,11 @@ add_executable(JLURoboVision
         Armor/predictor/kalman_filter.hpp
         Armor/predictor/AntiScopperil.cpp
         Armor/predictor/AntiScopperil.h
+        Armor/predictor/EKF.hpp 
         )
 
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}#链接库
         ${OpenCV_LIBS}
         ${Eigen3_LIBRARIES}
         ${CERES_LIBRARIES}

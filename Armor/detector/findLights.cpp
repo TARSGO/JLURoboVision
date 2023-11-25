@@ -5,8 +5,7 @@ bool ArmorDetector::isLight(const LightBar & light)
     // The ratio of light (short side / long side)
     float ratio = light.width / light.length;
     bool ratio_ok = 0.1 < ratio && ratio < 0.4;
-    bool angle_ok = light.angle < 40.0;
-
+    bool angle_ok = light.angle < 25.0;
     bool is_light = ratio_ok && angle_ok;
 
     return is_light;
@@ -25,9 +24,11 @@ void ArmorDetector::findLights() {
 
 	for (const auto& lightContour : lightContours) {
 		if (lightContour.size() < 5) continue; //if contour's size is less than 6 , then it can not used to fitEllipse 轮廓点数小于6，不可拟合椭圆
-    if (contourArea(lightContour) < 20 || contourArea(lightContour) > 270) continue; //minarea of lightContour to filter some small blobs 面积筛选滤去小发光点
+
+    //TODO:远距离击打和识别装甲板到底有没有必要，我认为是不必要的
+    //  if (contourArea(lightContour) < 20 || contourArea(lightContour) > 270) continue; //minarea of lightContour to filter some small blobs 面积筛选滤去小发光点
 		auto lightRect = minAreaRect(lightContour); //lightContour fits into a RotatedRect 拟合椭圆
-		auto light = LightBar(lightRect);//construct to a lightBar 构造为灯条
+		auto light = LightBar(lightRect,contourArea(lightContour));//construct to a lightBar 构造为灯条
 
 		if (isLight(light))
         {
@@ -56,7 +57,6 @@ void ArmorDetector::findLights() {
             lights.emplace_back(light);
         }
     }
-
     if (lights.size() < 2 || lights.size() > 20) {
         state = DetectorState::LIGHTS_NOT_FOUND; //if lights is less than 2, then set state not found lights 灯条少于两条则设置状态为没找到灯条
         return; //exit

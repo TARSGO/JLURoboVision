@@ -14,7 +14,7 @@ LightBar::LightBar(){
     lightRect = cv::RotatedRect();
 }
 
-LightBar::LightBar(const cv::RotatedRect &lightRect){
+LightBar::LightBar(const cv::RotatedRect &lightRect,double dbgarea){
     cv::Point2f p[4];
     lightRect.points(p);
     std::sort(p, p + 4, [](const cv::Point2f & a, const cv::Point2f & b) { return a.y < b.y; });
@@ -27,6 +27,8 @@ LightBar::LightBar(const cv::RotatedRect &lightRect){
 
     angle = std::atan2(std::abs(top.x - bottom.x), std::abs(top.y - bottom.y));
     angle = angle / CV_PI * 180;
+
+    area=dbgarea;
 }
 
 LightBar::~LightBar(){}

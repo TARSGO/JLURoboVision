@@ -68,17 +68,16 @@ int Serial::SerialReceive(SerialReceiveData* receiveBuf, char *serial_device)
         receiveBuf->pitch = BufferSharedRef->pitch * 0.01;
         receiveBuf->is_enemy_blue = BufferSharedRef->EnemyColor;
         receiveBuf->bullet_speed = BufferSharedRef->BulletSpeed;
-        // std::cout<<"success"<<std::endl;
-        // cout << "0:" << receiveBuf->INS_quat1<<endl;
-        // cout << "1:" << receiveBuf->INS_quat2<<endl;
-        // cout << "2:" << receiveBuf->INS_quat3<<endl;
-        // cout << "3:" << receiveBuf->INS_quat4<<endl;
-        // cout << "bullet speed :" << receiveBuf -> bullet_speed<<endl;
+        /*cout << "0:" << receiveBuf->INS_quat1<<endl;
+        cout << "1:" << receiveBuf->INS_quat2<<endl;
+        cout << "2:" << receiveBuf->INS_quat3<<endl;
+        cout << "3:" << receiveBuf->INS_quat4<<endl;
+        cout << "bullet speed :" << receiveBuf -> bullet_speed<<endl;*/
     }
 
 
 
-  ImGui::Begin("SerialReceive");
+/*    ImGui::Begin("SerialReceive");
     ImGui::Text("INS_quat1 : %f", receiveBuf->INS_quat1);
     ImGui::Text("INS_quat2 : %f", receiveBuf->INS_quat2);
     ImGui::Text("INS_quat3 : %f", receiveBuf->INS_quat3);
@@ -88,7 +87,7 @@ int Serial::SerialReceive(SerialReceiveData* receiveBuf, char *serial_device)
     ImGui::SameLine();
     ImGui::TextColored(receiveBuf->is_enemy_blue ? ImVec4(.2, .2, 1, 1) : ImVec4(1, .2, .2, 1),
                        receiveBuf->is_enemy_blue ? "BLUE" : "RED");
-    ImGui::End();
+    ImGui::End();*/
     return 0;
 }
 
@@ -103,13 +102,13 @@ int Serial::SerialSend(double yaw, double pitch, double distance, bool find, boo
 
     auto BufferIndex = 1 - serial->m_TransmitBufferIndex.load();
     auto txBuffer = serial->m_TransmissionBuffer[BufferIndex];
-    txBuffer->FrameHead = SendFrameHead;
+    txBuffer->FrameHead = 0xAA;
     txBuffer->Yaw = yaw * 100;
     txBuffer->Pitch = pitch * 100;
     txBuffer->Distance = distance * 100;
     txBuffer->Fire = fire;
     txBuffer->Found = find;
-    txBuffer->FrameEnd = SendFrameEnd;
+    txBuffer->FrameEnd = 0xB0;
 
     // 尝试交换缓冲区
     if (serial->m_TransmissionBuffer[serial->m_TransmitBufferIndex.load()].use_count() > 1) // 大于1，没传完
@@ -334,7 +333,6 @@ Serial *Serial::Get() {
 }
 
 void Serial::ReceiveThreadTask() {
-
     int fd = -1, err = 0;
     auto serial = Get();
     static int errorCounter = 0;
@@ -344,10 +342,12 @@ void Serial::ReceiveThreadTask() {
         // FIXME: 怎么锁这个字符串
         fd = open(serial->m_SerialPortDevice.c_str(),O_RDWR | O_NOCTTY | O_NDELAY); //打开串口，返回文件描述符
         if(fd == -1) continue;
+
         // 初始化串口
         do{
             err = serial->UART0_Init(fd,115200,0,8,1,'N');
         }while(false == err || false == fd);
+
         while(true) {
             // 主循环
             int TotalReceived = 0, BytesReceived = 0;
@@ -360,7 +360,6 @@ void Serial::ReceiveThreadTask() {
             pollfd pollstruct {}; pollstruct.fd = fd; pollstruct.events = POLLIN;
             ::poll(&pollstruct, 1, -1);
             while(true) {
-
                 int readBytes = serial->UART0_Recv(fd,
                                                    readBuf + bufferHalf * 4096,
                                                    4096);
@@ -461,10 +460,10 @@ void Serial::TransmitThreadTask() {
             std::unique_lock<std::mutex> uniqueLock(serial->m_SendCondMutex);
             serial->m_SendCondVar.wait(uniqueLock);
 
-            // cout << "/==== Send Thread activated " << CurrentPreciseTime() << " =====\\\n";
+//            cout << "/==== Send Thread activated " << CurrentPreciseTime() << " =====\\\n";
             auto transmissionBuffer = serial->m_TransmissionBuffer[serial->m_TransmitBufferIndex.load()];
             serial->UART0_Send(fd, (uint8_t*)(transmissionBuffer.get()), sizeof(_RawTransmissionFrame));
-            // cout << "\\==== Send Thread finished " << CurrentPreciseTime() << " =====/\n";
+//            cout << "\\==== Send Thread finished " << CurrentPreciseTime() << " =====/\n";
         }
     }
     assert(false);

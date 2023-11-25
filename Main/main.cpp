@@ -3,8 +3,8 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "Armor/Armor.h"
-#include "GxCamera/GxCamera.h"
+#include "../Armor/Armor.h"
+#include "../GxCamera/GxCamera.h"
 using std::thread;
 
 // Muti-threads control variables
@@ -31,14 +31,15 @@ int main(int argc, char** argv)
         }
     }
 
-      // 创建线程
-    if(doUseVideo)
+    // 创建线程
+	if(doUseVideo)
       thread(imageUpdatingThreadLocal, videoFileName).detach();
-    else
+  else
       thread(imageUpdatingThreadCamera).detach();
-    thread(armorDetectingThread).detach();
-    thread(Serial::ReceiveThreadTask).detach();
-    thread(Serial::TransmitThreadTask).detach();
+    
+	    thread(armorDetectingThread).detach();
+      thread(Serial::ReceiveThreadTask).detach();
+      thread(Serial::TransmitThreadTask).detach();
 
     // Main thread
 	// while (true)

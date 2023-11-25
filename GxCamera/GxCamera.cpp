@@ -140,22 +140,23 @@ GX_STATUS GxCamera::startAcquiring()
 	//申请图像内存空间
 	status = allocateImageBuf();
 	GX_VERIFY(status);
-  //设 置 触 发 模 式 为 OFF
   status = GXSetEnum(camHandle_, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
   GX_VERIFY(status);
-//    //设 置 触 发 激 活 方 式 为 上 升 沿，还可以设置下降沿触发，指电平上升或下降时为一次触发
-//    status = GXSetEnum(camHandle_, GX_ENUM_TRIGGER_ACTIVATION, GX_TRIGGER_ACTIVATION_RISINGEDGE);
-//    GX_VERIFY(status);
-//    //设置触发开关为line2
-//    status = GXSetEnum(camHandle_, GX_ENUM_TRIGGER_SOURCE, GX_TRIGGER_SOURCE_LINE2);
-//    GX_VERIFY(status);
-//    //Selects the physical line (or pin) of the external device connector to configure，我也不知道是啥反正加去了
-//    status = GXSetEnum(camHandle_, GX_ENUM_LINE_SELECTOR, GX_ENUM_LINE_SELECTOR_LINE2);
-//    GX_VERIFY(status);
-//    //设置line2模式为input，同样可以设置为outpot，则可以通过相机控制外部设备
-//    status = GXSetEnum(camHandle_, GX_ENUM_LINE_MODE, GX_ENUM_LINE_MODE_INPUT);
-//    GX_VERIFY(status);
-
+    // //设 置 触 发 模 式 为 ON
+    // status = GXSetEnum(camHandle_, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_ON);
+    // GX_VERIFY(status);
+    // //设 置 触 发 激 活 方 式 为 上 升 沿，还可以设置下降沿触发，指电平上升或下降时为一次触发
+    // status = GXSetEnum(camHandle_, GX_ENUM_TRIGGER_ACTIVATION, GX_TRIGGER_ACTIVATION_RISINGEDGE);
+    // GX_VERIFY(status);
+    // //设置触发开关为line2
+    // status = GXSetEnum(camHandle_, GX_ENUM_TRIGGER_SOURCE, GX_TRIGGER_SOURCE_LINE2);
+    // GX_VERIFY(status);
+    // //Selects the physical line (or pin) of the external device connector to configure，我也不知道是啥反正加去了
+    // status = GXSetEnum(camHandle_, GX_ENUM_LINE_SELECTOR, GX_ENUM_LINE_SELECTOR_LINE2);
+    // GX_VERIFY(status);
+    // //设置line2模式为input，同样可以设置为outpot，则可以通过相机控制外部设备
+    // status = GXSetEnum(camHandle_, GX_ENUM_LINE_MODE, GX_ENUM_LINE_MODE_INPUT);
+    // GX_VERIFY(status);
     // GX_ENUM_TRIGGER_MODE: 触发模式, 枚举值参考 GX_TRIGGER_MODE_ENTRY
     // GX_COMMAND_TRIGGER_SOFTWARE : 软触发命令
     // GX_ENUM_TRIGGER_ACTIVATION : 触发极性, 枚举值参考

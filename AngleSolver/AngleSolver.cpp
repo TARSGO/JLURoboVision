@@ -93,16 +93,20 @@ void AngleSolver::solveAngles(ArmorBox& target) {
     target.tMat = tVec.clone();
 }
 
-Eigen::Vector3f AngleSolver::getArmorPos(ArmorBox& target)
+Eigen::VectorXf AngleSolver::getArmorState(ArmorBox& target)
 {
+    Mat mtxR,mtxQ;
     solveAngles(target);
     Eigen::Vector3f tVec_Eigen;
 
     cv2eigen(tVec ,tVec_Eigen);
-    tVec_Eigen(1) -= 44;
-    tVec_Eigen(2) += 80;
-
-    return tVec_Eigen;
+    //tVec_Eigen(1) -= 140;
+    //tVec_Eigen(2) += 120;
+    cv::Rodrigues(rVec, rVec);
+    cv::Vec3f eulerAngles = cv::RQDecomp3x3(rVec, mtxR, mtxQ);//Pitch Yaw Roll
+    Eigen::Matrix<float,6,1 > state;
+    state << tVec_Eigen(0),tVec_Eigen(1),tVec_Eigen(2), eulerAngles[0], eulerAngles[1], eulerAngles[2];
+    return state;
 }
 
 // HACK

@@ -77,23 +77,11 @@ enum class Color
     RED = 1
 };
 
-/**
-* @brief: shoot mode MANUAL0 ARMOR1 BIG_WIND2 SMALL_WIND3
-*/
-enum class Mode
-{
-    MANUAL = 0,
-    AUTO = 1,
-    BIG_WIND = 2,
-    SMALL_WIND = 3
-};
-
 struct RotationAtt {
-    double yaw, pitch, distance;
+    double pitch, yaw, distance;
 };
 struct RelCoordAtt {
     double x, y, z;
-
     operator Eigen::Vector3d() const {
         return Eigen::Vector3d(x, y, z);
     }
@@ -194,6 +182,18 @@ inline float rangedAngleRad(float &angle)
         angle = rangedAngleRad(angle);
     }
     return angle;
+}
+
+/**
+* @brief 将角度限制在[-PI,PI]的范围内
+* @return 处理后的角度
+*/
+inline double easyFilter(double angle_yaw)
+{
+  double angle = angle_yaw;
+  if(angle>90)angle-=180;
+  if(angle<-90)angle+=180;
+  return angle;
 }
 
 std::string CurrentPreciseTime();
