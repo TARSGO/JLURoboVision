@@ -94,8 +94,8 @@ void armorDetectingThread()
           //迭代所有检测到的装甲板，解算出他们当前的位置，便于tracker处理
           for(auto i = Armor.begin(); i != Armor.end(); i++) {
               auto armorstate = angleSolver.getArmorState(*i);
-              Eigen::Vector3f Rc = armorstate.block(0,0,2,0);
-              Eigen::Vector3f Cam_ang = armorstate.block(3,0,5,0);//pitch yaw roll
+              Eigen::Vector3f Rc << armorstate(0), armorstate(1), armorstate(2) ;
+              Eigen::Vector3f Cam_ang << armorstate(3), armorstate(4), armorstate(5);//pitch yaw roll
               //FIXME: 当前使用相机坐标系坐标，记得改回来
               //auto Rn = Cbn * Rc;
               auto Rn = Rc;
@@ -114,14 +114,14 @@ void armorDetectingThread()
               ImGui::Text("armor_roll: %lf", Cam_ang(2) );
               ImGui::End();
               i->resolvedPos = { Rn(0), Rn(1), Rn(2)};
-              i->resolvedAng = {Cam_ang(0) + received.pitch, Cam_ang(1) + received.yaw, Cam_ang(2)};        
+              i->resolvedAng = {3.14/180*(Cam_ang(0) + received.pitch), 3.14/180*(Cam_ang(1) + received.yaw), 3.14/180*(Cam_ang(2))};        
           }
           bool targetValid = trackState.UpdateState(Armor);
           RotationAtt rotAtt, rotAtt1;
           if(targetValid) {
               Eigen::VectorXd target;
               target = trackState.GetTargetState();
-              float T = 0.2f + 0.5f; //T = 机械（拨弹）延迟 + 电控延迟（ms级） + 视觉延迟 + 串口延迟（ms级） + bullet  time
+              float T = 0.2f + 0.5f; //T = 机械（拨弹）延迟 + 电控延迟（ms级） + 视觉延迟 + 串口延迟（ms级） + bullet  time//FIXME:回头换成弹道模型计算出的时间+固定延迟
               float preX, preY, preZ;
               preX = target(0) + target(3) * T;
               preY = target(1) + target(4) * T;

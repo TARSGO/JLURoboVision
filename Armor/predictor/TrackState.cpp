@@ -421,11 +421,11 @@ bool TrackState::UpdateState(ArmorDetector& detector) {
             ImGui::Text("Armor Type: BIG ARMOR" );
         }
         ImGui::Text("Matched Armor Number %d", matched_armor.armorNum - '0');
-        ImGui::Text("Pos\nX %.3f\nY %.3f\nZ %.3f", pos.x, pos.y, pos.z);
+        ImGui::Text("Pos\nX %.3lf\nY %.3lf\nZ %.3lf", pos.x, pos.y, pos.z);
 
         if(m_TargetState.rows() >= 6) {
             // Only do this when m_TargetState has data
-            ImGui::Text("KF Position\nX %.3f\nY %.3f\nZ %.3f\nKF Velocity\nX %.3f\nY %.3f\nZ %.3f",
+            ImGui::Text("KF Position\nX %.3lf\nY %.3lf\nZ %.3lf\nKF Velocity\nX %.3lf\nY %.3lf\nZ %.3lf",
                         m_TargetState(0),
                         m_TargetState(1),
                         m_TargetState(2),

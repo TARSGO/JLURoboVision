@@ -93,7 +93,7 @@ void AngleSolver::solveAngles(ArmorBox& target) {
     target.tMat = tVec.clone();
 }
 
-Eigen::VectorXf AngleSolver::getArmorState(ArmorBox& target)
+Eigen::Matrix<float,6,1> AngleSolver::getArmorState(ArmorBox& target)
 {
     Mat mtxR,mtxQ;
     solveAngles(target);
@@ -104,7 +104,7 @@ Eigen::VectorXf AngleSolver::getArmorState(ArmorBox& target)
     //tVec_Eigen(2) += 120;
     cv::Rodrigues(rVec, rVec);
     cv::Vec3f eulerAngles = cv::RQDecomp3x3(rVec, mtxR, mtxQ);//Pitch Yaw Roll
-    Eigen::Matrix<float,6,1 > state;
+    Eigen::Matrix<float,6,1> state;
     state << tVec_Eigen(0),tVec_Eigen(1),tVec_Eigen(2), eulerAngles[0], eulerAngles[1], eulerAngles[2];
     return state;
 }
